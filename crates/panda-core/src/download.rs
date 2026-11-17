@@ -5,7 +5,7 @@ use futures_util::{StreamExt, stream};
 use reqwest::Client;
 use serde::de::DeserializeOwned;
 use sha1::{Digest, Sha1};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tokio::io::AsyncWriteExt;
 
 const PARALLEL: usize = 16;
@@ -27,25 +27,30 @@ pub async fn fetch(http: &Client, f: &FileSpec) -> Result<()> {
   {
     return Ok(());
   }
-  if let Some(dir) = f.path.parent() {
+  download_verified::<Sha1>(http, &f.url, &f.path, &f.sha1).await
+}
+
+/// Stream `url` to `path`, hashing with `D` (SHA-1 for Mojang, SHA-512 for Modrinth); a mismatch leaves nothing behind.
+pub async fn download_verified<D: Digest>(http: &Client, url: &str, path: &Path, expected_hex: &str) -> Result<()> {
+  if let Some(dir) = path.parent() {
     tokio::fs::create_dir_all(dir).await?;
   }
-  let mut tmp = f.path.clone().into_os_string();
+  let mut tmp = path.to_path_buf().into_os_string();
   tmp.push(".part");
-  let mut response = http.get(&f.url).send().await?.error_for_status()?;
+  let mut response = http.get(url).send().await?.error_for_status()?;
   let mut file = tokio::fs::File::create(&tmp).await?;
-  let mut hash = Sha1::new();
+  let mut hash = D::new();
   while let Some(chunk) = response.chunk().await? {
     hash.update(&chunk);
     file.write_all(&chunk).await?;
   }
   file.flush().await?;
   drop(file);
-  if hex(&hash.finalize()) != f.sha1.to_ascii_lowercase() {
+  if hex(&hash.finalize()) != expected_hex.to_ascii_lowercase() {
     let _ = tokio::fs::remove_file(&tmp).await;
-    return Err(Error::Checksum(f.url.clone()));
+    return Err(Error::Checksum(url.into()));
   }
-  tokio::fs::rename(&tmp, &f.path).await?;
+  tokio::fs::rename(&tmp, path).await?;
   Ok(())
 }
 

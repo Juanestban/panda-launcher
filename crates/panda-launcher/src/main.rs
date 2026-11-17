@@ -1,22 +1,49 @@
 use panda_core::account::{self, Resume};
 use panda_core::launch::{Launch, Player};
 use panda_core::version;
-use panda_core::{auth, fabric, java, net, paths::Dirs};
+use panda_core::{auth, fabric, java, mods, net, paths::Dirs};
 
 // shortcut: console front-end to exercise panda-core, replace with the zgui UI in Phase 5.
 // Usage: panda-launcher [minecraft-version]   (defaults to the latest release)
+//        panda-launcher mods <version> search <text> | add <project> | remove <project> | list
 #[tokio::main]
 async fn main() {
-  if let Err(e) = run().await {
+  let args: Vec<String> = std::env::args().skip(1).collect();
+  let result = match args.first().map(String::as_str) {
+    Some("mods") => mods_command(&args[1..]).await,
+    _ => run(args.first().cloned()).await,
+  };
+  if let Err(e) = result {
     eprintln!("error: {e}");
     std::process::exit(1);
   }
 }
 
-async fn run() -> Result<(), Box<dyn std::error::Error>> {
+async fn mods_command(args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
+  let (http, dirs) = (net::client(), Dirs::platform());
+  let arg = |i: usize| args.get(i).map(String::as_str).ok_or("usage: panda-launcher mods <version> search|add|remove|list [arg]");
+  let game = arg(0)?;
+  match arg(1)? {
+    "search" => {
+      for hit in mods::search(&http, game, arg(2)?, 0).await?.hits {
+        println!("{:<10} {:<30} {}", hit.project_id, hit.title, hit.description);
+      }
+    }
+    "add" => println!("Installed: {}", mods::install(&http, &dirs, game, arg(2)?).await?.join(", ")),
+    "remove" => println!("Removed: {}", mods::uninstall(&dirs, game, arg(2)?, false)?.join(", ")),
+    "list" => {
+      for m in mods::list(&dirs, game)?.mods {
+        println!("{:<10} {:<30} {}", m.project_id, m.title, if m.explicit { "" } else { "(dependency)" });
+      }
+    }
+    other => return Err(format!("unknown mods command {other}").into()),
+  }
+  Ok(())
+}
+
+async fn run(wanted: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
   let http = net::client();
   let dirs = Dirs::platform();
-  let wanted = std::env::args().nth(1);
 
   let player = match account::resume(&http).await? {
     Resume::Online(s) => player(&s.profile, s.access_token),

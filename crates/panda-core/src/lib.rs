@@ -6,6 +6,7 @@ pub mod download;
 pub mod fabric;
 pub mod java;
 pub mod launch;
+pub mod mods;
 pub mod net;
 pub mod paths;
 pub mod version;
@@ -29,6 +30,16 @@ pub enum Error {
   UnsupportedVersion(String),
   #[error("Fabric does not support Minecraft {0}")]
   NoFabric(String),
+  #[error("{0} has no Fabric build for Minecraft {1}")]
+  NoCompatibleMod(String, String),
+  #[error("{0} cannot be installed together with {1}")]
+  IncompatibleMods(String, String),
+  #[error("mod {0} is not installed")]
+  ModNotInstalled(String),
+  #[error("{0} is needed by {needers}", needers = .1.join(", "))]
+  ModStillRequired(String, Vec<String>),
+  #[error("Modrinth is busy, try again in a minute")]
+  RateLimited,
   #[error("Mojang has no Java runtime {0} for this platform")]
   NoJavaRuntime(String),
 }

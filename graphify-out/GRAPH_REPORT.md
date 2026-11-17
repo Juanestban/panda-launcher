@@ -1,17 +1,17 @@
 # Graph Report - panda-launcher  (2026-11-17)
 
 ## Corpus Check
-- 31 files · ~9,336 words
+- 32 files · ~10,806 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 4, .toml 1)
 
 ## Summary
-- 320 nodes · 547 edges · 26 communities (24 shown, 2 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.85)
+- 363 nodes · 654 edges · 28 communities (26 shown, 2 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6ee8ad36`
+- Built from commit: `edec3403`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -41,18 +41,20 @@
 - 0007. Modrinth as the only mod source, with client-side dependency resolution
 - 0008. Managed Java runtime
 - 0012. Astro website on GitHub Pages
+- mods.rs
+- 0010. Self-update from GitHub Releases, signed with ed25519
 
 ## God Nodes (most connected - your core abstractions)
-1. `Dirs` - 24 edges
+1. `Dirs` - 32 edges
 2. `AuthError` - 23 edges
 3. `Version` - 17 edges
-4. `Roadmap` - 11 edges
-5. `install()` - 10 edges
+4. `install()` - 11 edges
+5. `Roadmap` - 11 edges
 6. `install()` - 10 edges
-7. `resume()` - 9 edges
-8. `sign_in()` - 9 edges
-9. `Arg` - 9 edges
-10. `Rule` - 9 edges
+7. `install()` - 10 edges
+8. `resume()` - 9 edges
+9. `sign_in()` - 9 edges
+10. `Arg` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `expand()` --calls--> `allowed()`  [INFERRED]
@@ -61,15 +63,15 @@
   crates/panda-launcher/src/main.rs → crates/panda-core/src/auth.rs
 - `expand()` --references--> `Item`  [EXTRACTED]
   crates/panda-core/src/launch.rs → crates/panda-core/src/auth.rs
-- `fabric_json()` --references--> `Dirs`  [EXTRACTED]
-  crates/panda-core/src/fabric.rs → crates/panda-core/src/paths.rs
-- `merge()` --references--> `Version`  [EXTRACTED]
-  crates/panda-core/src/fabric.rs → crates/panda-core/src/version.rs
+- `mods_dir()` --calls--> `profile_name()`  [INFERRED]
+  crates/panda-core/src/mods.rs → crates/panda-core/src/fabric.rs
+- `record_path()` --calls--> `profile_name()`  [INFERRED]
+  crates/panda-core/src/mods.rs → crates/panda-core/src/fabric.rs
 
 ## Import Cycles
 - None detected.
 
-## Communities (26 total, 2 thin omitted)
+## Communities (28 total, 2 thin omitted)
 
 ### Community 1 - "Roadmap"
 Cohesion: 0.18
@@ -97,23 +99,23 @@ Nodes (4): 0006. Per-version isolated profiles, Consequences, Context, Decision
 
 ### Community 7 - "fabric.rs"
 Cohesion: 0.15
-Nodes (20): fabric_json(), FabricArguments, FabricProfile, game_versions(), GameVersion, install(), installs_real_fabric_profiles(), latest_loader() (+12 more)
+Nodes (19): fabric_json(), FabricArguments, FabricProfile, game_versions(), GameVersion, install(), installs_real_fabric_profiles(), latest_loader() (+11 more)
 
 ### Community 8 - "Panda Launcher"
 Cohesion: 0.50
 Nodes (3): graphify, Panda Launcher, Rules
 
 ### Community 9 - "Error"
-Cohesion: 0.17
-Nodes (10): Error, Checksum, Http, Io, Json, NoFabric, NoJavaRuntime, UnknownVersion (+2 more)
+Cohesion: 0.12
+Nodes (15): Error, Checksum, Http, IncompatibleMods, Io, Json, ModNotInstalled, ModStillRequired (+7 more)
 
 ### Community 10 - "auth.rs"
 Cohesion: 0.11
 Nodes (26): Oauth, Claims, CLIENT_ID, client_id(), device_code(), DEVICE_GRANT, DeviceCode, Entitlements (+18 more)
 
 ### Community 11 - "0009. MSI and portable distribution (archi-games layout)"
-Cohesion: 0.20
-Nodes (8): 0009. MSI and portable distribution (archi-games layout), Consequences, Context, Decision, 0010. Self-update from GitHub Releases, signed with ed25519, Consequences, Context, Decision
+Cohesion: 0.50
+Nodes (4): 0009. MSI and portable distribution (archi-games layout), Consequences, Context, Decision
 
 ### Community 12 - "account.rs"
 Cohesion: 0.10
@@ -136,20 +138,20 @@ Cohesion: 0.09
 Nodes (31): Action, Allow, Disallow, allowed(), Arg, Plain, Ruled, Arguments (+23 more)
 
 ### Community 17 - "net.rs"
-Cohesion: 0.20
-Nodes (4): USER_AGENT, main(), player(), run()
+Cohesion: 0.19
+Nodes (5): USER_AGENT, main(), mods_command(), player(), run()
 
 ### Community 19 - "0004. Offline play only after verified ownership"
 Cohesion: 0.50
 Nodes (4): 0004. Offline play only after verified ownership, Consequences, Context, Decision
 
 ### Community 20 - "Dirs"
-Cohesion: 0.11
-Nodes (6): args_put_main_class_between_jvm_and_game_args(), expand(), fill(), Launch, Player, Dirs
+Cohesion: 0.19
+Nodes (5): args_put_main_class_between_jvm_and_game_args(), expand(), fill(), Launch, Player
 
 ### Community 21 - "download.rs"
-Cohesion: 0.16
-Nodes (7): fetch(), fetch_all(), FileSpec, get_json(), hex(), json(), PARALLEL
+Cohesion: 0.18
+Nodes (8): download_verified(), fetch(), fetch_all(), FileSpec, get_json(), hex(), json(), PARALLEL
 
 ### Community 22 - "java.rs"
 Cohesion: 0.22
@@ -167,25 +169,33 @@ Nodes (4): 0008. Managed Java runtime, Consequences, Context, Decision
 Cohesion: 0.50
 Nodes (4): 0012. Astro website on GitHub Pages, Consequences, Context, Decision
 
+### Community 26 - "mods.rs"
+Cohesion: 0.09
+Nodes (30): profile_name(), API, Dependency, find_conflict(), get(), Hashes, incompatible_of(), install() (+22 more)
+
+### Community 27 - "0010. Self-update from GitHub Releases, signed with ed25519"
+Cohesion: 0.50
+Nodes (4): 0010. Self-update from GitHub Releases, signed with ed25519, Consequences, Context, Decision
+
 ## Knowledge Gaps
-- **30 isolated node(s):** `panda-core`, `SignedOut`, `NoClientId`, `Expired`, `Declined` (+25 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 148 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **35 isolated node(s):** `panda-core`, `SignedOut`, `NoClientId`, `Expired`, `Declined` (+30 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 161 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AuthError` connect `account.rs` to `auth.rs`?**
-  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **Why does `Dirs` connect `mods.rs` to `version.rs`, `Dirs`, `java.rs`, `fabric.rs`?**
+  _High betweenness centrality (0.080) - this node is a cross-community bridge._
 - **What connects `panda-core`, `SignedOut`, `NoClientId` to the rest of the system?**
-  _30 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _35 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `fabric.rs` be split into smaller, more focused modules?**
-  _Cohesion score 0.14666666666666667 - nodes in this community are weakly interconnected._
-- **Why does `Dirs` connect `Dirs` to `version.rs`, `download.rs`, `java.rs`, `fabric.rs`?**
-  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+  _Cohesion score 0.14855072463768115 - nodes in this community are weakly interconnected._
+- **Why does `Error` connect `Error` to `fabric.rs`, `version.rs`, `download.rs`, `java.rs`, `mods.rs`?**
+  _High betweenness centrality (0.069) - this node is a cross-community bridge._
+- **Should `Error` be split into smaller, more focused modules?**
+  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
+- **Why does `AuthError` connect `account.rs` to `auth.rs`?**
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **Should `auth.rs` be split into smaller, more focused modules?**
   _Cohesion score 0.11260504201680673 - nodes in this community are weakly interconnected._
-- **Why does `Error` connect `Error` to `version.rs`, `download.rs`, `java.rs`, `fabric.rs`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Should `account.rs` be split into smaller, more focused modules?**
-  _Cohesion score 0.09982174688057041 - nodes in this community are weakly interconnected._

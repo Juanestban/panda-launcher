@@ -40,12 +40,12 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 
 ## Phase 4: Modrinth mods
 
-- [ ] Search filtered by game version and `fabric`. ([ADR 0007](adr/0007-modrinth-only-dependency-resolution.md))
-- [ ] Install the newest compatible version into the profile's `mods/`, verified with SHA-512.
-- [ ] Resolve `required` dependencies recursively; refuse `incompatible` ones.
-- [ ] Per-profile `panda-mods.json` that records what was installed and why.
-- [ ] Uninstall, with a warning when other installed mods depend on it.
-- [ ] Respect the rate limit (300 req/min) and the `X-Ratelimit-*` headers.
+- [x] Search filtered by game version and `fabric`. ([ADR 0007](adr/0007-modrinth-only-dependency-resolution.md))
+- [x] Install the newest compatible version into the profile's `mods/`, verified with SHA-512.
+- [x] Resolve `required` dependencies recursively; refuse `incompatible` ones.
+- [x] Per-profile `panda-mods.json` that records what was installed and why.
+- [x] Uninstall, with a warning when other installed mods depend on it.
+- [x] Respect the rate limit (300 req/min) and the `X-Ratelimit-*` headers.
 
 ## Phase 5: UI (zgui)
 
