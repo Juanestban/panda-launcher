@@ -18,6 +18,15 @@ impl Lang {
     }
   }
 
+  /// The saved choice (`"es"`, `"en"`), or the OS language when there is none.
+  pub fn from_setting(tag: Option<&str>) -> Self {
+    match tag {
+      Some("es") => Lang::Es,
+      Some("en") => Lang::En,
+      _ => Lang::system(),
+    }
+  }
+
   fn source(self) -> &'static str {
     match self {
       Lang::Es => include_str!("../locales/es.ftl"),
@@ -47,7 +56,6 @@ thread_local! {
 }
 
 /// Switch language; the UI rebuilds its tree afterwards.
-#[allow(dead_code)] // wired to the Settings screen in the next increment
 pub fn set_lang(lang: Lang) {
   BUNDLE.with(|b| *b.borrow_mut() = bundle(lang));
 }

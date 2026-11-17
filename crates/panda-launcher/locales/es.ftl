@@ -1,5 +1,6 @@
 nav-play = Jugar
 nav-mods = Mods
+nav-settings = Ajustes
 nav-about = Acerca de
 
 account-checking = Comprobando la cuenta…
@@ -43,6 +44,16 @@ mods-dependency = dependencia
 mods-installed-ok = Instalado: { $names }
 mods-removed-ok = Quitado: { $names }
 mods-by = por { $author }
+
+settings-title = Ajustes
+settings-subtitle = Los cambios se guardan solos.
+settings-language = Idioma
+settings-language-system = Idioma del sistema
+settings-memory = Memoria para Minecraft
+settings-memory-hint = Deja libre al menos la mitad de la RAM del equipo para el sistema.
+settings-auto-update = Buscar actualizaciones automáticamente
+settings-auto-update-hint = Al iniciar y cada hora. Nada se instala sin que pulses el botón.
+settings-save-error = No se pudieron guardar los ajustes: { $error }
 
 about-title = Acerca de
 about-version = Versión { $version }

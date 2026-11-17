@@ -85,6 +85,10 @@ pub const SHEET: &str = zgui::css!(
 
    .skeleton-row { height: 56px; border-radius: 8px }
 
+   .settings { gap: 24px; max-width: 640px }
+   .settings__toggle { gap: 16px; align-items: center }
+   .settings__toggle-text { flex-grow: 1 }
+
    .about { gap: 12px; max-width: 640px }
 
    @media (prefers-reduced-motion: reduce) {

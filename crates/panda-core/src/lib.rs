@@ -9,6 +9,7 @@ pub mod launch;
 pub mod mods;
 pub mod net;
 pub mod paths;
+pub mod settings;
 pub mod version;
 
 /// Errors from installing and launching (auth has its own [`auth::AuthError`]).

@@ -6,12 +6,12 @@
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 4, .ttf 2, .ftl 2)
 
 ## Summary
-- 456 nodes · 841 edges · 28 communities (26 shown, 2 thin omitted)
+- 457 nodes · 841 edges · 29 communities (26 shown, 3 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 15 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bf981bfd`
+- Built from commit: `8cb2b2d6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,7 +24,7 @@
 - 0006. Per-version isolated profiles
 - fabric.rs
 - Panda Launcher
-- Error
+- java.rs
 - auth.rs
 - 0009. MSI and portable distribution (archi-games layout)
 - account.rs
@@ -37,7 +37,7 @@
 - 0004. Offline play only after verified ownership
 - mod.rs
 - download.rs
-- java.rs
+- prelude
 - 0007. Modrinth as the only mod source, with client-side dependency resolution
 - 0008. Managed Java runtime
 - i18n.rs
@@ -49,29 +49,29 @@
 2. `AuthError` - 23 edges
 3. `AppState` - 22 edges
 4. `Version` - 17 edges
-5. `install()` - 11 edges
-6. `core()` - 11 edges
-7. `Roadmap` - 11 edges
+5. `core()` - 11 edges
+6. `Roadmap` - 11 edges
+7. `install()` - 11 edges
 8. `install()` - 10 edges
 9. `install()` - 10 edges
-10. `resume()` - 9 edges
+10. `Lang` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `signed_in()` --references--> `Profile`  [EXTRACTED]
-  crates/panda-launcher/src/ui/state.rs → crates/panda-core/src/auth.rs
-- `expand()` --references--> `Item`  [EXTRACTED]
-  crates/panda-core/src/launch.rs → crates/panda-core/src/auth.rs
-- `mods_dir()` --calls--> `profile_name()`  [INFERRED]
-  crates/panda-core/src/mods.rs → crates/panda-core/src/fabric.rs
-- `record_path()` --calls--> `profile_name()`  [INFERRED]
-  crates/panda-core/src/mods.rs → crates/panda-core/src/fabric.rs
-- `fabric_json()` --references--> `Dirs`  [EXTRACTED]
-  crates/panda-core/src/fabric.rs → crates/panda-core/src/paths.rs
+- `play()` --calls--> `tr()`  [INFERRED]
+  crates/panda-launcher/src/ui/state.rs → crates/panda-launcher/src/i18n.rs
+- `Sidebar()` --references--> `AppState`  [EXTRACTED]
+  crates/panda-launcher/src/ui/mod.rs → crates/panda-launcher/src/ui/state.rs
+- `NavItem()` --references--> `AppState`  [EXTRACTED]
+  crates/panda-launcher/src/ui/mod.rs → crates/panda-launcher/src/ui/state.rs
+- `AccountBox()` --references--> `AppState`  [EXTRACTED]
+  crates/panda-launcher/src/ui/mod.rs → crates/panda-launcher/src/ui/state.rs
+- `ModsPage()` --calls--> `core()`  [INFERRED]
+  crates/panda-launcher/src/ui/mods.rs → crates/panda-launcher/src/ui/state.rs
 
 ## Import Cycles
 - None detected.
 
-## Communities (28 total, 2 thin omitted)
+## Communities (29 total, 3 thin omitted)
 
 ### Community 1 - "Roadmap"
 Cohesion: 0.18
@@ -105,9 +105,9 @@ Nodes (19): fabric_json(), FabricArguments, FabricProfile, game_versions(), Game
 Cohesion: 0.50
 Nodes (3): graphify, Panda Launcher, Rules
 
-### Community 9 - "Error"
-Cohesion: 0.12
-Nodes (15): Error, Checksum, Http, IncompatibleMods, Io, Json, ModNotInstalled, ModStillRequired (+7 more)
+### Community 9 - "java.rs"
+Cohesion: 0.08
+Nodes (30): ALL, DONE, ensure(), Entry, EntryDownloads, falls_back_to_same_major_version(), java_exe(), pick() (+22 more)
 
 ### Community 10 - "auth.rs"
 Cohesion: 0.09
@@ -138,8 +138,8 @@ Cohesion: 0.07
 Nodes (36): args_put_main_class_between_jvm_and_game_args(), expand(), fill(), Launch, Player, Action, Allow, Disallow (+28 more)
 
 ### Community 17 - "state.rs"
-Cohesion: 0.06
-Nodes (36): SearchHit, SearchPage, t(), tr(), GEIST, GEIST_MONO, SHEET, AboutPage() (+28 more)
+Cohesion: 0.08
+Nodes (31): SearchHit, t(), tr(), InstalledRow(), Mods, ModsPage(), ResultRow(), PlayPage() (+23 more)
 
 ### Community 19 - "0004. Offline play only after verified ownership"
 Cohesion: 0.50
@@ -150,12 +150,12 @@ Cohesion: 0.13
 Nodes (15): DOWNLOAD, INFO, PLAY, PUZZLE, SEARCH, SIGN_OUT, TRASH, AccountBox() (+7 more)
 
 ### Community 21 - "download.rs"
-Cohesion: 0.19
+Cohesion: 0.18
 Nodes (8): download_verified(), fetch(), fetch_all(), FileSpec, get_json(), hex(), json(), PARALLEL
 
-### Community 22 - "java.rs"
-Cohesion: 0.22
-Nodes (15): ALL, DONE, ensure(), Entry, EntryDownloads, falls_back_to_same_major_version(), java_exe(), pick() (+7 more)
+### Community 22 - "prelude"
+Cohesion: 0.17
+Nodes (4): GEIST, GEIST_MONO, SHEET, AboutPage()
 
 ### Community 23 - "0007. Modrinth as the only mod source, with client-side dependency resolution"
 Cohesion: 0.50
@@ -171,30 +171,30 @@ Nodes (8): both_languages_have_the_same_keys(), bundle(), keys(), Lang, En, Es, 
 
 ### Community 26 - "mods.rs"
 Cohesion: 0.09
-Nodes (28): profile_name(), API, Dependency, find_conflict(), get(), Hashes, incompatible_of(), install() (+20 more)
+Nodes (29): profile_name(), API, Dependency, find_conflict(), get(), Hashes, incompatible_of(), install() (+21 more)
 
 ### Community 27 - "0010. Self-update from GitHub Releases, signed with ed25519"
 Cohesion: 0.50
 Nodes (4): 0010. Self-update from GitHub Releases, signed with ed25519, Consequences, Context, Decision
 
 ## Knowledge Gaps
-- **47 isolated node(s):** `panda-core`, `SignedOut`, `NoClientId`, `Expired`, `Declined` (+42 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 195 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **47 isolated node(s):** `panda-launcher`, `Es`, `En`, `Play`, `Mods` (+42 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 196 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Dirs` connect `mods.rs` to `version.rs`, `state.rs`, `java.rs`, `fabric.rs`?**
+- **Why does `Dirs` connect `mods.rs` to `version.rs`, `java.rs`, `state.rs`, `fabric.rs`?**
   _High betweenness centrality (0.086) - this node is a cross-community bridge._
-- **What connects `panda-core`, `SignedOut`, `NoClientId` to the rest of the system?**
+- **What connects `panda-launcher`, `Es`, `En` to the rest of the system?**
   _47 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `fabric.rs` be split into smaller, more focused modules?**
   _Cohesion score 0.14855072463768115 - nodes in this community are weakly interconnected._
-- **Why does `Error` connect `Error` to `fabric.rs`, `version.rs`, `download.rs`, `java.rs`, `mods.rs`?**
+- **Why does `Error` connect `java.rs` to `version.rs`, `mods.rs`, `download.rs`, `fabric.rs`?**
   _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **Should `Error` be split into smaller, more focused modules?**
-  _Cohesion score 0.11764705882352941 - nodes in this community are weakly interconnected._
+- **Should `java.rs` be split into smaller, more focused modules?**
+  _Cohesion score 0.08377896613190731 - nodes in this community are weakly interconnected._
 - **Why does `AuthError` connect `account.rs` to `auth.rs`?**
   _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **Should `auth.rs` be split into smaller, more focused modules?**

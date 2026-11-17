@@ -52,7 +52,7 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [x] Pin zgui to a git revision. ([ADR 0002](adr/0002-zgui-pinned-ui.md))
 - [x] Theme from [`design-system.md`](design-system.md).
 - [x] Screens: sign-in (device code), Play (version picker + Play button), Mods (search, installed), About (versions, licences, disclaimer).
-- [ ] Settings screen (language, memory, auto-update).
+- [x] Settings screen (language, memory, auto-update), saved to `settings.json`.
 - [x] Download and launch progress; skeleton loading; inline errors.
 - [x] Spanish and English with Fluent, defaulting to the system locale. ([ADR 0011](adr/0011-fluent-i18n-es-en.md))
 

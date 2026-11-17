@@ -5,6 +5,7 @@ use panda_core::account::{self, Resume};
 use panda_core::launch::{Launch, Player};
 use panda_core::net::Client;
 use panda_core::paths::Dirs;
+use panda_core::settings::{self, Settings};
 use panda_core::{auth, fabric, java, version};
 use std::sync::OnceLock;
 use zgui::prelude::*;
@@ -24,6 +25,7 @@ pub fn core() -> &'static Core {
 pub enum Page {
   Play,
   Mods,
+  Settings,
   About,
 }
 
@@ -63,6 +65,7 @@ pub struct AppState {
   /// The selected Minecraft version; Play and Mods both work on its profile.
   pub version: RwSignal<String>,
   pub play: RwSignal<PlayState>,
+  pub settings: RwSignal<Settings>,
 }
 
 impl AppState {
@@ -75,6 +78,7 @@ impl AppState {
       versions_failed: RwSignal::new(false),
       version: RwSignal::new(String::new()),
       play: RwSignal::new(PlayState::Idle),
+      settings: RwSignal::new(settings::load(&core().dirs)),
     }
   }
 }
@@ -176,6 +180,7 @@ pub fn open_url(url: &str) {
 pub fn play(state: AppState) {
   let Account::SignedIn { name, uuid, token, offline } = state.account.get_untracked() else { return };
   let game = state.version.get_untracked();
+  let max_memory_mb = state.settings.get_untracked().memory_mb;
   if game.is_empty() || matches!(state.play.get_untracked(), PlayState::Working { .. } | PlayState::Running) {
     return;
   }
@@ -214,7 +219,7 @@ pub fn play(state: AppState) {
       step("play-step-launch", vec![]);
       let player = Player { name, uuid, access_token: token };
       let game_dir = c.dirs.profile(&fabric::profile_name(&v.id));
-      let launch = Launch { version: &v, java: &java, game_dir: &game_dir, player: &player, max_memory_mb: 4096 };
+      let launch = Launch { version: &v, java: &java, game_dir: &game_dir, player: &player, max_memory_mb };
       launch.spawn(&c.dirs)
     })
     .await;

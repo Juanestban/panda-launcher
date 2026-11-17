@@ -32,7 +32,7 @@ Data (both builds): `%LOCALAPPDATA%\PandaLauncher\`
 
 ```
 PandaLauncher/
-  settings.toml           language, memory, auto-update toggle
+  settings.json           language, memory, auto-update toggle
   logs/
   shared/
     versions/<id>/        version JSON + client jar
