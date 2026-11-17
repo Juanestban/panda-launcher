@@ -3,17 +3,20 @@
 GitHub Actions (`.github/workflows/release.yml`) builds and publishes a release when a `vX.Y.Z` tag is pushed.
 Installed launchers find it and offer to update ([ADR 0010](docs/adr/0010-github-releases-updater-signed.md)).
 
-## One-time setup
+## Setup
 
-In the repository's **Settings → Secrets and variables → Actions**:
+Nothing is required: with no secrets the release builds, publishes, and installed copies update from it,
+checking each download against `SHA256SUMS.txt`. These settings (**Settings → Secrets and variables → Actions**) are optional:
 
-| Name | Kind | Value |
-|---|---|---|
-| `PANDA_MSA_CLIENT_ID` | secret | The Azure app's client ID ([ADR 0003](docs/adr/0003-microsoft-auth-device-code-own-client-id.md)). |
-| `PANDA_UPDATE_SIGNING_KEY` | secret | 64 hex characters from `openssl rand -hex 32`. Also keep a copy in a password manager. |
-| `PANDA_UPDATE_PUBLIC_KEY` | variable | The output of `PANDA_UPDATE_SIGNING_KEY=<key> cargo run -p panda-core --example sign -- --public`. |
+| Name | Kind | Without it | Value |
+|---|---|---|---|
+| `PANDA_MSA_CLIENT_ID` | secret | The build can't sign in with Microsoft. | The Azure app's client ID ([ADR 0003](docs/adr/0003-microsoft-auth-device-code-own-client-id.md)). It is not secret, so it may also be a variable. |
+| `PANDA_UPDATE_SIGNING_KEY` | secret | No `.sig` files. | 64 hex characters from `openssl rand -hex 32`. Keep a copy in a password manager. |
+| `PANDA_UPDATE_PUBLIC_KEY` | variable | Updates are checked by SHA-256 only. | The output of `PANDA_UPDATE_SIGNING_KEY=<key> cargo run -p panda-core --example sign -- --public`. |
 
-Never commit the signing key or paste it anywhere else. The release job fails if any of these is missing or if the public key doesn't match the signing key.
+Signing is all or nothing: set both update keys, or neither. When the public key is set the job checks it matches the
+signing key, because copies built with a key refuse unsigned updates. Turning signing on later is fine; turning it off
+later strands the copies built with the key (they must download one release by hand). Never commit the signing key.
 
 ## Steps
 
@@ -29,7 +32,7 @@ Never commit the signing key or paste it anywhere else. The release job fails if
    git tag v0.2.0
    git push origin v0.2.0
    ```
-5. In the **Actions** tab the *Release* workflow checks the tag against `Cargo.toml`, runs the tests, packages, signs and publishes the release with notes generated from the commits.
+5. In the **Actions** tab the *Release* workflow checks the tag against `Cargo.toml`, runs the tests, packages, signs (when the keys are set) and publishes the release with notes generated from the commits.
 
 ## What it publishes
 
@@ -38,9 +41,9 @@ Never commit the signing key or paste it anywhere else. The release job fails if
 | `PandaLauncher-<version>-x64.msi` | Per-user installer (no admin). Installed copies update with this. |
 | `PandaLauncher-<version>-x64-portable.exe` | Standalone exe. Portable copies update with this. |
 | `SHA256SUMS.txt` | SHA-256 of both files. |
-| `<file>.sig` | ed25519 signature over that file's SHA-256 digest. |
+| `<file>.sig` | Only with the signing key: ed25519 signature over that file's SHA-256 digest. |
 
-**Don't rename these files**: the updater finds them by name and skips releases missing any of them.
+**Don't rename these files**: the updater finds them by name and skips releases missing the installer or `SHA256SUMS.txt` (or the `.sig`, for signed builds).
 
 ## Packaging locally (Windows)
 

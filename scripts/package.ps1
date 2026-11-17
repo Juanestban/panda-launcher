@@ -2,10 +2,10 @@
 #   PandaLauncher-<version>-x64.msi                 per-user installer
 #   PandaLauncher-<version>-x64-portable.exe        standalone executable
 #   SHA256SUMS.txt                                  checksums the in-app updater verifies
-#   <installer>.sig                                 ed25519 signatures over each installer's SHA-256
+#   <installer>.sig                                 optional ed25519 signatures over each installer's SHA-256
 # Needs the repo's local WiX tool (`dotnet tool restore`, see dotnet-tools.json).
-# Build-time inputs (environment): PANDA_MSA_CLIENT_ID, PANDA_UPDATE_PUBLIC_KEY, PANDA_UPDATE_SIGNING_KEY.
-# Without the signing key the .sig files are skipped, and such a package can't be published.
+# Optional build-time inputs (environment): PANDA_MSA_CLIENT_ID, PANDA_UPDATE_PUBLIC_KEY, PANDA_UPDATE_SIGNING_KEY.
+# Without the signing key there are no .sig files; keyless builds update from the SHA-256 checksums alone.
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -38,8 +38,6 @@ $sums = Get-ChildItem $dist -File | Sort-Object Name | ForEach-Object { "$((Get-
 if ($env:PANDA_UPDATE_SIGNING_KEY) {
   cargo run --release --locked -p panda-core --example sign -- $msi $portable
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-} else {
-  Write-Warning "PANDA_UPDATE_SIGNING_KEY is not set: no .sig files, the updater won't offer this build."
 }
 
 Get-ChildItem $dist | Select-Object Name, Length | Format-Table -AutoSize

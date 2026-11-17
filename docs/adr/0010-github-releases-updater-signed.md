@@ -25,3 +25,9 @@ Reuse the archi-games design in `panda-core::update`, and add a signature check:
 ## Consequences
 - No updater framework; about 300 lines we own.
 - Losing the private key means shipping a release that rotates the public key. A leaked key needs the same response.
+
+## Amendment (2026-11-17): keys are optional
+The release must work with no secrets, like archi-games. Builds without `PANDA_UPDATE_PUBLIC_KEY` update from any newer
+release that has the installer and `SHA256SUMS.txt`, trusting GitHub over HTTPS and checking the SHA-256. Builds with the
+key still require and verify the `.sig`. Empty values (how Actions exports an unset secret) count as unset.
+Trade-off: without signing, someone who controls the GitHub account or the release can ship an update.

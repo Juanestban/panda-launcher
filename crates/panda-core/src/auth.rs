@@ -88,7 +88,8 @@ pub struct Session {
 }
 
 fn client_id() -> Result<&'static str> {
-  CLIENT_ID.ok_or(AuthError::NoClientId)
+  // CI exports an unset secret as an empty string.
+  CLIENT_ID.filter(|id| !id.trim().is_empty()).ok_or(AuthError::NoClientId)
 }
 
 /// Step 1: ask Microsoft for a code the player enters at `verification_uri`.

@@ -32,24 +32,31 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Tag matches the Cargo version, and the keys are configured
+      # No keys are required. PANDA_MSA_CLIENT_ID enables Microsoft sign in; the two update keys are optional
+      # hardening (RELEASING.md). Unset secrets arrive as empty strings, which the code treats as "not set".
+      - name: Tag matches the Cargo version
         shell: pwsh
         run: |
           $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.+)"').Matches[0].Groups[1].Value
           if ("v$version" -ne "${{ github.ref_name }}") {
             throw "Tag ${{ github.ref_name }} doesn't match version $version in Cargo.toml"
           }
-          foreach ($name in "PANDA_MSA_CLIENT_ID", "PANDA_UPDATE_PUBLIC_KEY", "PANDA_UPDATE_SIGNING_KEY") {
-            if (-not [Environment]::GetEnvironmentVariable($name)) { throw "$name is not configured (see RELEASING.md)" }
-          }
-          # The compiled-in public key must belong to the signing key, or every update would be rejected.
+          if (-not $env:PANDA_MSA_CLIENT_ID) { Write-Warning "PANDA_MSA_CLIENT_ID is not set: this build can't sign in with Microsoft." }
+
+      # Only when signing is turned on: a compiled-in key without matching .sig files would make every
+      # later update fail for the people who install this build.
+      - name: Signing keys match
+        if: ${{ vars.PANDA_UPDATE_PUBLIC_KEY != '' }}
+        shell: pwsh
+        run: |
+          if (-not $env:PANDA_UPDATE_SIGNING_KEY) { throw "PANDA_UPDATE_PUBLIC_KEY is set but PANDA_UPDATE_SIGNING_KEY is not" }
           $public = cargo run --quiet --locked -p panda-core --example sign -- --public
           if ($public.Trim() -ne $env:PANDA_UPDATE_PUBLIC_KEY.Trim()) { throw "PANDA_UPDATE_PUBLIC_KEY doesn't match PANDA_UPDATE_SIGNING_KEY" }
 
       - name: Test
         run: cargo test --workspace --locked
 
-      # target\dist: the MSI, the portable exe, SHA256SUMS.txt and the .sig files.
+      # target\dist: the MSI, the portable exe, SHA256SUMS.txt, and .sig files when signing is on.
       - name: Package
         shell: pwsh
         run: ./scripts/package.ps1
