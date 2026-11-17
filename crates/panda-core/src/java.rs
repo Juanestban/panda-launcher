@@ -40,9 +40,12 @@ struct RuntimeManifest {
 struct Entry {
   #[serde(rename = "type")]
   kind: String,
+  // Only Unix needs these (exec bit, symlinks); Windows builds never read them.
   #[serde(default)]
+  #[cfg_attr(not(unix), allow(dead_code))]
   executable: bool,
   downloads: Option<EntryDownloads>,
+  #[cfg_attr(not(unix), allow(dead_code))]
   target: Option<String>,
 }
 
