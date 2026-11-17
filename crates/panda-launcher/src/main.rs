@@ -1,6 +1,10 @@
-use panda_core::{account, auth, net};
+use panda_core::account::{self, Resume};
+use panda_core::launch::{Launch, Player};
+use panda_core::version::{self, Version};
+use panda_core::{auth, java, net, paths::Dirs};
 
-// shortcut: console sign-in to exercise panda-core, replace with the zgui UI in Phase 5.
+// shortcut: console front-end to exercise panda-core, replace with the zgui UI in Phase 5.
+// Usage: panda-launcher [minecraft-version]   (defaults to the latest release)
 #[tokio::main]
 async fn main() {
   if let Err(e) = run().await {
@@ -9,23 +13,49 @@ async fn main() {
   }
 }
 
-async fn run() -> Result<(), auth::AuthError> {
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
   let http = net::client();
-  match account::resume(&http).await? {
-    account::Resume::Online(s) => {
-      println!("Signed in as {} (ownership verified)", s.profile.name)
-    }
-    account::Resume::Offline(a) => {
-      println!("Offline: playing as {} (verified before)", a.profile.name)
-    }
-    account::Resume::SignedOut => {
+  let dirs = Dirs::platform();
+  let wanted = std::env::args().nth(1);
+
+  let player = match account::resume(&http).await? {
+    Resume::Online(s) => player(&s.profile, s.access_token),
+    // Offline play only for an account whose ownership was verified before (ADR 0004).
+    Resume::Offline(a) => player(&a.profile, "0".into()),
+    Resume::SignedOut => {
       let code = auth::device_code(&http).await?;
       println!("Open {} and enter the code {}", code.verification_uri, code.user_code);
-      let msa = auth::poll(&http, &code).await?;
-      let session = auth::sign_in(&http, msa).await?;
+      let session = auth::sign_in(&http, auth::poll(&http, &code).await?).await?;
       account::save(&session)?;
-      println!("Signed in as {} (ownership verified)", session.profile.name);
+      player(&session.profile, session.access_token)
     }
-  }
+  };
+  println!("Playing as {}", player.name);
+
+  let progress = |done: usize, total: usize| {
+    if done == total || done.is_multiple_of(500) {
+      println!("  {done}/{total}");
+    }
+  };
+  let v = match version::manifest(&http).await {
+    Ok(manifest) => {
+      let id = wanted.unwrap_or_else(|| manifest.latest.release.clone());
+      println!("Installing Minecraft {id}");
+      version::install(&http, &dirs, manifest.find(&id)?, progress).await?
+    }
+    // No network: use what is already installed.
+    Err(e) => Version::load(&dirs, &wanted.ok_or(e)?)?,
+  };
+  let java = java::ensure(&http, &dirs, &v.java_version, progress).await?;
+
+  // Phase 3 makes this `<version>-fabric`.
+  let game_dir = dirs.profile(&v.id);
+  let launch = Launch { version: &v, java: &java, game_dir: &game_dir, player: &player, max_memory_mb: 4096 };
+  let status = launch.spawn(&dirs)?.wait()?;
+  println!("Minecraft exited ({status}); log in {}", dirs.logs().display());
   Ok(())
+}
+
+fn player(profile: &auth::Profile, access_token: String) -> Player {
+  Player { name: profile.name.clone(), uuid: profile.id.clone(), access_token }
 }

@@ -28,9 +28,9 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [x] Map XSTS `XErr` codes to user-facing messages (no Xbox account, child account, region blocked).
 - [~] Store the refresh token and cached ownership in the OS keychain (`keyring`). ([ADR 0004](adr/0004-offline-play-after-verified-ownership.md))
 - [~] Silent refresh on start; offline play only for a previously verified account.
-- [ ] Version manifest, version JSON, libraries (OS rules), natives, asset index and objects; SHA-1 verified and resumable.
-- [ ] Managed Java runtime from Mojang's runtime manifest. ([ADR 0008](adr/0008-managed-java-runtime.md))
-- [ ] Build launch arguments and spawn the game; stream logs to a file.
+- [x] Version manifest, version JSON, libraries (OS rules), natives, asset index and objects; SHA-1 verified and resumable.
+- [x] Managed Java runtime from Mojang's runtime manifest. ([ADR 0008](adr/0008-managed-java-runtime.md))
+- [~] Build launch arguments and spawn the game; stream logs to a file.
 
 ## Phase 3: Fabric profiles
 

@@ -5,7 +5,13 @@ pub const USER_AGENT: &str = concat!("panda-launcher/", env!("CARGO_PKG_VERSION"
 
 /// The one HTTP client the launcher uses; clone it freely (it is reference-counted).
 pub fn client() -> reqwest::Client {
-  reqwest::Client::builder().user_agent(USER_AGENT).timeout(Duration::from_secs(60)).build().expect("TLS backend initialises")
+  // Idle timeouts, not a total one: a 200 MB Java download may take minutes on a slow link.
+  reqwest::Client::builder()
+    .user_agent(USER_AGENT)
+    .connect_timeout(Duration::from_secs(15))
+    .read_timeout(Duration::from_secs(30))
+    .build()
+    .expect("TLS backend initialises")
 }
 
 #[cfg(test)]

@@ -1,0 +1,89 @@
+//! Hash-verified, parallel downloads written atomically (temp name, then rename).
+
+use crate::{Error, Result};
+use futures_util::{StreamExt, stream};
+use reqwest::Client;
+use serde::de::DeserializeOwned;
+use sha1::{Digest, Sha1};
+use std::path::PathBuf;
+use tokio::io::AsyncWriteExt;
+
+const PARALLEL: usize = 16;
+
+#[derive(Debug, Clone)]
+pub struct FileSpec {
+  pub url: String,
+  pub path: PathBuf,
+  pub sha1: String,
+  /// Unknown for a few metadata files; then any existing file counts as present.
+  pub size: Option<u64>,
+}
+
+/// Download one file unless it is already there.
+// shortcut: an existing file is trusted when its size matches (hashing ~4000 assets each launch is slow); add a "repair" action that re-hashes when users report corruption.
+pub async fn fetch(http: &Client, f: &FileSpec) -> Result<()> {
+  if let Ok(meta) = tokio::fs::metadata(&f.path).await
+    && f.size.is_none_or(|s| s == meta.len())
+  {
+    return Ok(());
+  }
+  if let Some(dir) = f.path.parent() {
+    tokio::fs::create_dir_all(dir).await?;
+  }
+  let mut tmp = f.path.clone().into_os_string();
+  tmp.push(".part");
+  let mut response = http.get(&f.url).send().await?.error_for_status()?;
+  let mut file = tokio::fs::File::create(&tmp).await?;
+  let mut hash = Sha1::new();
+  while let Some(chunk) = response.chunk().await? {
+    hash.update(&chunk);
+    file.write_all(&chunk).await?;
+  }
+  file.flush().await?;
+  drop(file);
+  if hex(&hash.finalize()) != f.sha1.to_ascii_lowercase() {
+    let _ = tokio::fs::remove_file(&tmp).await;
+    return Err(Error::Checksum(f.url.clone()));
+  }
+  tokio::fs::rename(&tmp, &f.path).await?;
+  Ok(())
+}
+
+/// Download everything, 16 at a time; `progress(done, total)` after each file.
+pub async fn fetch_all(http: &Client, files: &[FileSpec], progress: impl Fn(usize, usize)) -> Result<()> {
+  // Assets share hashes, so the same path can appear twice; two parallel writers would race on the `.part` file.
+  let mut seen = std::collections::HashSet::new();
+  let unique: Vec<&FileSpec> = files.iter().filter(|f| seen.insert(&f.path)).collect();
+  let mut pending = stream::iter(unique.iter().map(|f| fetch(http, f))).buffer_unordered(PARALLEL);
+  let mut done = 0;
+  while let Some(result) = pending.next().await {
+    result?;
+    done += 1;
+    progress(done, unique.len());
+  }
+  Ok(())
+}
+
+/// Download (if needed) and parse a JSON file.
+pub async fn json<T: DeserializeOwned>(http: &Client, f: &FileSpec) -> Result<T> {
+  fetch(http, f).await?;
+  Ok(serde_json::from_slice(&tokio::fs::read(&f.path).await?)?)
+}
+
+/// Parse a small JSON document straight from the network.
+pub async fn get_json<T: DeserializeOwned>(http: &Client, url: &str) -> Result<T> {
+  Ok(http.get(url).send().await?.error_for_status()?.json().await?)
+}
+
+fn hex(bytes: &[u8]) -> String {
+  bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+#[cfg(test)]
+mod tests {
+  #[test]
+  fn sha1_hex_matches_known_value() {
+    use sha1::{Digest, Sha1};
+    assert_eq!(super::hex(&Sha1::digest(b"abc")), "a9993e364706816aba3e25717850c26c9cd0d89d");
+  }
+}
