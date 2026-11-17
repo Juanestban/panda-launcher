@@ -34,9 +34,9 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 
 ## Phase 3: Fabric profiles
 
-- [ ] Fabric loader profile from `meta.fabricmc.net`, merged over the vanilla version JSON. ([ADR 0005](adr/0005-fabric-only.md))
-- [ ] Isolated profile directories `profiles/<version>-fabric/`, launched with `--gameDir`. ([ADR 0006](adr/0006-per-version-isolated-profiles.md))
-- [ ] Create a profile on first play of a version; one profile per version.
+- [x] Fabric loader profile from `meta.fabricmc.net`, merged over the vanilla version JSON. ([ADR 0005](adr/0005-fabric-only.md))
+- [x] Isolated profile directories `profiles/<version>-fabric/`, launched with `--gameDir`. ([ADR 0006](adr/0006-per-version-isolated-profiles.md))
+- [x] Create a profile on first play of a version; one profile per version.
 
 ## Phase 4: Modrinth mods
 

@@ -1,7 +1,7 @@
 use panda_core::account::{self, Resume};
 use panda_core::launch::{Launch, Player};
-use panda_core::version::{self, Version};
-use panda_core::{auth, java, net, paths::Dirs};
+use panda_core::version;
+use panda_core::{auth, fabric, java, net, paths::Dirs};
 
 // shortcut: console front-end to exercise panda-core, replace with the zgui UI in Phase 5.
 // Usage: panda-launcher [minecraft-version]   (defaults to the latest release)
@@ -40,16 +40,16 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
   let v = match version::manifest(&http).await {
     Ok(manifest) => {
       let id = wanted.unwrap_or_else(|| manifest.latest.release.clone());
-      println!("Installing Minecraft {id}");
-      version::install(&http, &dirs, manifest.find(&id)?, progress).await?
+      println!("Installing Minecraft {id} with Fabric");
+      let vanilla = version::install(&http, &dirs, manifest.find(&id)?, &progress).await?;
+      fabric::install(&http, &dirs, vanilla, &progress).await?
     }
-    // No network: use what is already installed.
-    Err(e) => Version::load(&dirs, &wanted.ok_or(e)?)?,
+    // No network: use the profile already installed.
+    Err(e) => fabric::load(&dirs, &wanted.ok_or(e)?)?,
   };
-  let java = java::ensure(&http, &dirs, &v.java_version, progress).await?;
+  let java = java::ensure(&http, &dirs, &v.java_version, &progress).await?;
 
-  // Phase 3 makes this `<version>-fabric`.
-  let game_dir = dirs.profile(&v.id);
+  let game_dir = dirs.profile(&fabric::profile_name(&v.id));
   let launch = Launch { version: &v, java: &java, game_dir: &game_dir, player: &player, max_memory_mb: 4096 };
   let status = launch.spawn(&dirs)?.wait()?;
   println!("Minecraft exited ({status}); log in {}", dirs.logs().display());

@@ -3,6 +3,7 @@
 pub mod account;
 pub mod auth;
 pub mod download;
+pub mod fabric;
 pub mod java;
 pub mod launch;
 pub mod net;
@@ -26,6 +27,8 @@ pub enum Error {
   UnknownVersion(String),
   #[error("Minecraft {0} is too old for this launcher (Fabric needs 1.14+)")]
   UnsupportedVersion(String),
+  #[error("Fabric does not support Minecraft {0}")]
+  NoFabric(String),
   #[error("Mojang has no Java runtime {0} for this platform")]
   NoJavaRuntime(String),
 }
