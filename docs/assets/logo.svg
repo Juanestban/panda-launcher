@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<title>Panda Launcher</title>
+<defs><clipPath id="tile"><rect width="512" height="512" rx="112"/></clipPath></defs>
+<rect width="512" height="512" rx="112" fill="#000"/>
+<g clip-path="url(#tile)"><polygon points="0,0 256,0 0,256" fill="#0D0506"/><polygon points="256,0 512,0 512,220" fill="#0A0405"/><polygon points="0,512 0,300 220,512" fill="#0A0405"/><polygon points="512,512 300,512 512,280" fill="#110607"/></g>
+<polygon points="120,196 112,100 168,66 220,118" fill="#2B2B2B"/>
+<polygon points="392,196 400,100 344,66 292,118" fill="#2B2B2B"/>
+<polygon points="112,100 168,66 150,120" fill="#383838"/>
+<polygon points="400,100 344,66 362,120" fill="#383838"/>
+<polygon points="138,160 140,108 176,92 198,126" fill="#E5484D"/>
+<polygon points="374,160 372,108 336,92 314,126" fill="#E5484D"/>
+<polygon points="140,108 176,92 158,130" fill="#B8343A"/>
+<polygon points="372,108 336,92 354,130" fill="#B8343A"/>
+<polygon points="96,250 130,170 180,220" fill="#E2E2E2" stroke="#E2E2E2" stroke-width="1"/>
+<polygon points="130,170 200,128 180,220" fill="#EDEDED" stroke="#EDEDED" stroke-width="1"/>
+<polygon points="200,128 256,120 256,190" fill="#F7F7F7" stroke="#F7F7F7" stroke-width="1"/>
+<polygon points="200,128 256,190 180,220" fill="#F0F0F0" stroke="#F0F0F0" stroke-width="1"/>
+<polygon points="256,120 312,128 256,190" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1"/>
+<polygon points="312,128 332,220 256,190" fill="#F7F7F7" stroke="#F7F7F7" stroke-width="1"/>
+<polygon points="312,128 382,170 332,220" fill="#FAFAFA" stroke="#FAFAFA" stroke-width="1"/>
+<polygon points="382,170 416,250 332,220" fill="#EFEFEF" stroke="#EFEFEF" stroke-width="1"/>
+<polygon points="96,250 180,220 108,330" fill="#D8D8D8" stroke="#D8D8D8" stroke-width="1"/>
+<polygon points="180,220 256,190 256,300" fill="#F2F2F2" stroke="#F2F2F2" stroke-width="1"/>
+<polygon points="256,190 332,220 256,300" fill="#FBFBFB" stroke="#FBFBFB" stroke-width="1"/>
+<polygon points="332,220 416,250 404,330" fill="#E6E6E6" stroke="#E6E6E6" stroke-width="1"/>
+<polygon points="180,220 256,300 196,350" fill="#E9E9E9" stroke="#E9E9E9" stroke-width="1"/>
+<polygon points="180,220 196,350 108,330" fill="#DDDDDD" stroke="#DDDDDD" stroke-width="1"/>
+<polygon points="332,220 404,330 316,350" fill="#E2E2E2" stroke="#E2E2E2" stroke-width="1"/>
+<polygon points="332,220 316,350 256,300" fill="#F1F1F1" stroke="#F1F1F1" stroke-width="1"/>
+<polygon points="108,330 196,350 152,394" fill="#CFCFCF" stroke="#CFCFCF" stroke-width="1"/>
+<polygon points="404,330 360,394 316,350" fill="#D6D6D6" stroke="#D6D6D6" stroke-width="1"/>
+<polygon points="152,394 196,350 212,428" fill="#D4D4D4" stroke="#D4D4D4" stroke-width="1"/>
+<polygon points="196,350 256,434 212,428" fill="#D9D9D9" stroke="#D9D9D9" stroke-width="1"/>
+<polygon points="196,350 256,300 256,434" fill="#E4E4E4" stroke="#E4E4E4" stroke-width="1"/>
+<polygon points="256,300 316,350 256,434" fill="#EAEAEA" stroke="#EAEAEA" stroke-width="1"/>
+<polygon points="316,350 300,428 256,434" fill="#DEDEDE" stroke="#DEDEDE" stroke-width="1"/>
+<polygon points="316,350 360,394 300,428" fill="#D2D2D2" stroke="#D2D2D2" stroke-width="1"/>
+<polygon points="150,262 176,226 222,224 236,256 222,300 184,316 156,300" fill="#0E0E0E"/>
+<polygon points="362,262 336,226 290,224 276,256 290,300 328,316 356,300" fill="#0E0E0E"/>
+<polygon points="176,226 222,224 200,262" fill="#1E1E1E"/>
+<polygon points="336,226 290,224 312,262" fill="#1E1E1E"/>
+<polygon points="194,254 214,244 224,264 204,274" fill="#FFFFFF"/>
+<polygon points="318,254 298,244 288,264 308,274" fill="#FFFFFF"/>
+<polygon points="204,258 214,254 217,264 207,268" fill="#0E0E0E"/>
+<polygon points="308,258 298,254 295,264 305,268" fill="#0E0E0E"/>
+<polygon points="146,350 180,338 170,368" fill="#E5484D"/>
+<polygon points="366,350 332,338 342,368" fill="#E5484D"/>
+<polygon points="230,318 282,318 256,346" fill="#0E0E0E"/>
+<polygon points="240,320 258,320 248,330" fill="#2A2A2A"/>
+<polyline points="238,374 256,362 274,374" fill="none" stroke="#0E0E0E" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="256" y1="346" x2="256" y2="362" stroke="#0E0E0E" stroke-width="7" stroke-linecap="round"/>
+</svg>

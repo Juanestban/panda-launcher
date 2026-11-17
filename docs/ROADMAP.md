@@ -13,7 +13,7 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [ ] **Register the Azure app**: personal Microsoft accounts only, "Allow public client flows: Yes", no secret, no redirect URI. ([ADR 0003](adr/0003-microsoft-auth-device-code-own-client-id.md))
 - [ ] **Request Minecraft API access** for that client ID at <https://aka.ms/mce-reviewappid>. Approval takes days to weeks; until then `login_with_xbox` returns `403 Invalid app registration`.
 - [ ] Add `PANDA_MSA_CLIENT_ID` as a GitHub Actions secret.
-- [ ] Generate the ed25519 release key pair; private key → `PANDA_UPDATE_SIGNING_KEY` secret, public key → `PANDA_UPDATE_PUBLIC_KEY` repository variable. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
+- [ ] *(Optional)* Generate the ed25519 release key pair to sign updates; private key → `PANDA_UPDATE_SIGNING_KEY` secret, public key → `PANDA_UPDATE_PUBLIC_KEY` repository variable. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
 - [~] Make the repo public; add `LICENSE-MIT` and `LICENSE-APACHE` (licences added).
 
 ## Phase 1: Workspace and CI
@@ -65,7 +65,7 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [x] Updater: check on start and hourly, download on click, verify SHA-256 and ed25519, install, relaunch with `--after-update`. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
 - [x] Single-instance lock with retry while the old process exits.
 - [x] `RELEASING.md`.
-- [ ] First real release: configure the secrets in RELEASING.md, tag `v0.1.0`, install the MSI on Windows, then publish `v0.1.1` and update in-app (MSI and portable).
+- [ ] First real release: tag `v0.2.0` (no keys needed), install the MSI and the portable on Windows, then publish `v0.2.1` and update in-app from both.
 
 ## Phase 7: Website
 
