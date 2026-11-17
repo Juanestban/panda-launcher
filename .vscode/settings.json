@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "graphify-out/.*": true,
+    "graphify-out/cache": true,
+    "graphify-out/cost.json": true,
+    "graphify-out/manifest.json": true,
+    "graphify-out/needs_update": true,
+    "graphify-out/reflections": true
+  }
+}
