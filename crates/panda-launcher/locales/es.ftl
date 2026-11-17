@@ -1,0 +1,51 @@
+nav-play = Jugar
+nav-mods = Mods
+nav-about = Acerca de
+
+account-checking = Comprobando la cuenta…
+account-sign-in = Iniciar sesión con Microsoft
+account-sign-out = Cerrar sesión
+account-signed-out = Sin sesión iniciada
+account-online = Compra verificada
+account-offline = Sin conexión
+account-code-title = Introduce este código
+account-code-hint = Abre { $uri } en el navegador e introduce el código. Esta pantalla se actualiza sola.
+account-open-link = Abrir la página
+account-waiting = Esperando a Microsoft…
+account-cancel = Cancelar
+
+play-title = Jugar
+play-subtitle = Elige una versión. Fabric y Java se instalan solos.
+play-version = Versión de Minecraft
+play-button = Jugar
+play-sign-in-first = Inicia sesión con una cuenta que tenga Minecraft: Java Edition para jugar.
+play-step-version = Descargando Minecraft { $version }
+play-step-fabric = Instalando Fabric
+play-step-java = Descargando Java
+play-step-launch = Iniciando Minecraft…
+play-running = Minecraft está abierto
+play-files = { $done } de { $total } archivos
+play-versions-error = No se pudo cargar la lista de versiones.
+
+mods-title = Mods
+mods-subtitle = Para Minecraft { $version } con Fabric. Las dependencias se instalan solas.
+mods-search-placeholder = Buscar en Modrinth
+mods-search = Buscar
+mods-results = Resultados
+mods-installed = Instalados
+mods-empty-title = Todavía no hay mods
+mods-empty-hint = Busca un mod y pulsa Instalar.
+mods-no-results = No hay resultados para esta versión.
+mods-install = Instalar
+mods-working = Trabajando…
+mods-remove = Quitar
+mods-dependency = dependencia
+mods-installed-ok = Instalado: { $names }
+mods-removed-ok = Quitado: { $names }
+mods-by = por { $author }
+
+about-title = Acerca de
+about-version = Versión { $version }
+about-disclaimer = No es un producto oficial de Minecraft. No está aprobado ni asociado con Mojang o Microsoft.
+about-licenses = Panda Launcher se distribuye con licencia MIT o Apache-2.0. Fuente Geist (OFL), iconos Phosphor (MIT), interfaz hecha con zgui (Apache-2.0).
+about-source = Código fuente: github.com/juanestban/panda-launcher

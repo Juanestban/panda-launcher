@@ -59,7 +59,9 @@ pub async fn fetch_all(http: &Client, files: &[FileSpec], progress: impl Fn(usiz
   // Assets share hashes, so the same path can appear twice; two parallel writers would race on the `.part` file.
   let mut seen = std::collections::HashSet::new();
   let unique: Vec<&FileSpec> = files.iter().filter(|f| seen.insert(&f.path)).collect();
-  let mut pending = stream::iter(unique.iter().map(|f| fetch(http, f))).buffer_unordered(PARALLEL);
+  // Collected first: a closure inside the stream's type makes the whole future non-`Send` (rustc #102211).
+  let futures: Vec<_> = unique.iter().map(|f| fetch(http, f)).collect();
+  let mut pending = stream::iter(futures).buffer_unordered(PARALLEL);
   let mut done = 0;
   while let Some(result) = pending.next().await {
     result?;

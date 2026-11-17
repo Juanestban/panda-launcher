@@ -49,11 +49,12 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 
 ## Phase 5: UI (zgui)
 
-- [ ] Pin zgui to a git revision. ([ADR 0002](adr/0002-zgui-pinned-ui.md))
-- [ ] Theme from [`design-system.md`](design-system.md).
-- [ ] Screens: sign-in (device code), Play (version picker + Play button), Mods (search, installed), Settings (language, memory, auto-update), About (versions, licences, disclaimer).
-- [ ] Download and launch progress; skeleton loading; inline errors.
-- [ ] Spanish and English with Fluent, defaulting to the system locale. ([ADR 0011](adr/0011-fluent-i18n-es-en.md))
+- [x] Pin zgui to a git revision. ([ADR 0002](adr/0002-zgui-pinned-ui.md))
+- [x] Theme from [`design-system.md`](design-system.md).
+- [x] Screens: sign-in (device code), Play (version picker + Play button), Mods (search, installed), About (versions, licences, disclaimer).
+- [ ] Settings screen (language, memory, auto-update).
+- [x] Download and launch progress; skeleton loading; inline errors.
+- [x] Spanish and English with Fluent, defaulting to the system locale. ([ADR 0011](adr/0011-fluent-i18n-es-en.md))
 
 ## Phase 6: Distribution and updates → **v1.0**
 

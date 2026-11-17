@@ -7,4 +7,11 @@ repository.workspace = true
 
 [dependencies]
 panda-core = { path = "../panda-core" }
-tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros"] }
+# ADR 0002: zgui is 0.x and changes often; bump this rev on purpose, never implicitly.
+zgui = { git = "https://github.com/zortax/zgui", rev = "6684d362c857590ce860f50d6fe1abd97d04c535", features = ["tokio"] }
+zgui-ui = { git = "https://github.com/zortax/zgui", rev = "6684d362c857590ce860f50d6fe1abd97d04c535" }
+zgui-ui-tokens = { git = "https://github.com/zortax/zgui", rev = "6684d362c857590ce860f50d6fe1abd97d04c535" }
+zgui-ui-icons = { git = "https://github.com/zortax/zgui", rev = "6684d362c857590ce860f50d6fe1abd97d04c535" }
+fluent-bundle = "0.16.0"
+unic-langid = "0.9.6"
+sys-locale = "0.3.2"

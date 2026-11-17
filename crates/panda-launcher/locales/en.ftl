@@ -1,0 +1,51 @@
+nav-play = Play
+nav-mods = Mods
+nav-about = About
+
+account-checking = Checking your account…
+account-sign-in = Sign in with Microsoft
+account-sign-out = Sign out
+account-signed-out = Not signed in
+account-online = Ownership verified
+account-offline = Offline
+account-code-title = Enter this code
+account-code-hint = Open { $uri } in your browser and enter the code. This screen updates by itself.
+account-open-link = Open the page
+account-waiting = Waiting for Microsoft…
+account-cancel = Cancel
+
+play-title = Play
+play-subtitle = Pick a version. Fabric and Java install by themselves.
+play-version = Minecraft version
+play-button = Play
+play-sign-in-first = Sign in with an account that owns Minecraft: Java Edition to play.
+play-step-version = Downloading Minecraft { $version }
+play-step-fabric = Installing Fabric
+play-step-java = Downloading Java
+play-step-launch = Starting Minecraft…
+play-running = Minecraft is running
+play-files = { $done } of { $total } files
+play-versions-error = Could not load the version list.
+
+mods-title = Mods
+mods-subtitle = For Minecraft { $version } with Fabric. Dependencies install by themselves.
+mods-search-placeholder = Search Modrinth
+mods-search = Search
+mods-results = Results
+mods-installed = Installed
+mods-empty-title = No mods yet
+mods-empty-hint = Search for a mod and press Install.
+mods-no-results = No results for this version.
+mods-install = Install
+mods-working = Working…
+mods-remove = Remove
+mods-dependency = dependency
+mods-installed-ok = Installed: { $names }
+mods-removed-ok = Removed: { $names }
+mods-by = by { $author }
+
+about-title = About
+about-version = Version { $version }
+about-disclaimer = Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.
+about-licenses = Panda Launcher is licensed under MIT or Apache-2.0. Geist font (OFL), Phosphor icons (MIT), interface built with zgui (Apache-2.0).
+about-source = Source code: github.com/juanestban/panda-launcher
