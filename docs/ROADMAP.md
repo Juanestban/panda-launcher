@@ -14,20 +14,20 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [ ] **Request Minecraft API access** for that client ID at <https://aka.ms/mce-reviewappid>. Approval takes days to weeks; until then `login_with_xbox` returns `403 Invalid app registration`.
 - [ ] Add `PANDA_MSA_CLIENT_ID` as a GitHub Actions secret.
 - [ ] Generate the ed25519 release key pair; private key → `PANDA_UPDATE_SIGNING_KEY` secret, public key → committed in `panda-core`. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
-- [ ] Make the repo public; add `LICENSE-MIT` and `LICENSE-APACHE`.
+- [~] Make the repo public; add `LICENSE-MIT` and `LICENSE-APACHE` (licences added).
 
 ## Phase 1: Workspace and CI
 
-- [ ] Convert to a Cargo workspace: `crates/panda-core`, `crates/panda-launcher`. ([ADR 0001](adr/0001-rust-workspace-core-ui-split.md))
-- [ ] `ci.yml` on `windows-latest`: `cargo fmt --check`, `clippy -D warnings`, `cargo test --workspace --locked`.
-- [ ] Shared HTTP client with the project User-Agent `panda-launcher/<version> (+https://github.com/juanestban/panda-launcher)`, with no personal data.
+- [x] Convert to a Cargo workspace: `crates/panda-core`, `crates/panda-launcher`. ([ADR 0001](adr/0001-rust-workspace-core-ui-split.md))
+- [x] `ci.yml` on `windows-latest`: `cargo fmt --check`, `clippy -D warnings`, `cargo test --workspace --locked`.
+- [x] Shared HTTP client with the project User-Agent `panda-launcher/<version> (+https://github.com/juanestban/panda-launcher)`, with no personal data.
 
 ## Phase 2: Core: auth and vanilla launch
 
-- [ ] Microsoft device-code login → Xbox Live → XSTS → Minecraft token → entitlements → profile. ([ADR 0003](adr/0003-microsoft-auth-device-code-own-client-id.md))
-- [ ] Map XSTS `XErr` codes to user-facing messages (no Xbox account, child account, region blocked).
-- [ ] Store the refresh token and cached ownership in the OS keychain (`keyring`). ([ADR 0004](adr/0004-offline-play-after-verified-ownership.md))
-- [ ] Silent refresh on start; offline play only for a previously verified account.
+- [~] Microsoft device-code login → Xbox Live → XSTS → Minecraft token → entitlements → profile. ([ADR 0003](adr/0003-microsoft-auth-device-code-own-client-id.md))
+- [x] Map XSTS `XErr` codes to user-facing messages (no Xbox account, child account, region blocked).
+- [~] Store the refresh token and cached ownership in the OS keychain (`keyring`). ([ADR 0004](adr/0004-offline-play-after-verified-ownership.md))
+- [~] Silent refresh on start; offline play only for a previously verified account.
 - [ ] Version manifest, version JSON, libraries (OS rules), natives, asset index and objects; SHA-1 verified and resumable.
 - [ ] Managed Java runtime from Mojang's runtime manifest. ([ADR 0008](adr/0008-managed-java-runtime.md))
 - [ ] Build launch arguments and spawn the game; stream logs to a file.

@@ -1,0 +1,10 @@
+[package]
+name = "panda-launcher"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+panda-core = { path = "../panda-core" }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros"] }
