@@ -3094,7 +3094,7 @@ dependencies = [
 
 [[package]]
 name = "panda-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ed25519-dalek",
  "futures-util",
@@ -3111,7 +3111,7 @@ dependencies = [
 
 [[package]]
 name = "panda-launcher"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "fluent-bundle",
  "panda-core",

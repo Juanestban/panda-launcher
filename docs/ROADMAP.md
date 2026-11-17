@@ -13,7 +13,7 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [ ] **Register the Azure app**: personal Microsoft accounts only, "Allow public client flows: Yes", no secret, no redirect URI. ([ADR 0003](adr/0003-microsoft-auth-device-code-own-client-id.md))
 - [ ] **Request Minecraft API access** for that client ID at <https://aka.ms/mce-reviewappid>. Approval takes days to weeks; until then `login_with_xbox` returns `403 Invalid app registration`.
 - [ ] Add `PANDA_MSA_CLIENT_ID` as a GitHub Actions secret.
-- [ ] Generate the ed25519 release key pair; private key → `PANDA_UPDATE_SIGNING_KEY` secret, public key → committed in `panda-core`. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
+- [ ] Generate the ed25519 release key pair; private key → `PANDA_UPDATE_SIGNING_KEY` secret, public key → `PANDA_UPDATE_PUBLIC_KEY` repository variable. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
 - [~] Make the repo public; add `LICENSE-MIT` and `LICENSE-APACHE` (licences added).
 
 ## Phase 1: Workspace and CI
