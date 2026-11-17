@@ -64,7 +64,7 @@ pub const SHEET: &str = zgui::css!(
    .brand__name { font-size: 16px; line-height: 24px; font-weight: 600 }
    .nav-label { padding: 16px 12px 8px 12px; font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 1px; color: #6E6E6E }
 
-   .nav-item { display: flex; flex-direction: row; padding: 8px 12px; gap: 12px; border-radius: 8px; align-items: center; color: #9B9B9B;
+   .nav-item { display: flex; flex-direction: row; padding: 8px 12px; gap: 12px; border-radius: 8px; align-items: center; color: #9B9B9B; cursor: pointer;
                transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1), color 300ms cubic-bezier(0.22, 1, 0.36, 1) }
    .nav-item:hover { background: #181818; color: #FAFAFA }
    .nav-item:active { transform: scale(0.98) }
@@ -72,6 +72,12 @@ pub const SHEET: &str = zgui::css!(
    .nav-item.is-active { background: rgba(229, 72, 77, 0.12); color: #FF6369 }
 
    .icon { width: 20px; height: 20px; flex-shrink: 0 }
+
+   /* Everything clickable shows the hand, and a clearer hover than zgui-ui's defaults on black. */
+   .zui-button, .zui-native-select, .zui-switch { cursor: pointer }
+   .zui-button--default:hover { background-color: #EC5D61 }
+   .zui-button--secondary:hover, .zui-button--outline:hover, .zui-button--ghost:hover { background-color: #272727 }
+   .zui-button:disabled, .zui-native-select:disabled, .zui-switch:disabled { cursor: default }
    .account { padding: 12px; gap: 12px; border-radius: 12px; background: #181818; border: 1px solid #272727 }
    .account__row { gap: 12px; align-items: center }
    .account__avatar { width: 32px; height: 32px; border-radius: 8px; background: rgba(229, 72, 77, 0.16); align-items: center;
@@ -105,24 +111,29 @@ pub const SHEET: &str = zgui::css!(
    .stack { gap: 24px; padding: 0 8px 40px 0 }
    .search-row { gap: 8px; align-items: center }
    .search-row__input { flex-grow: 1 }
+   .search-row__version, .version-filter__select { width: 128px; flex-shrink: 0 }
+   .search-row__version .zui-native-select, .version-filter__select .zui-native-select { width: 100% }
+   .version-filter { gap: 16px; align-items: center }
+   .version-filter__hint { flex-grow: 1 }
+   .skeleton-select { width: 140px; height: 36px; border-radius: 8px }
    .section-head { gap: 8px; align-items: center }
    .section-head__title { flex-grow: 1 }
    .list { gap: 8px }
    .grid { gap: 12px; flex-wrap: wrap }
 
-   .mod-card { display: flex; flex-direction: column; width: 300px; padding: 16px; gap: 12px; border-radius: 12px; background: #181818; border: 1px solid #272727;
+   .mod-card { display: flex; flex-direction: row; align-items: center; padding: 16px; gap: 16px; border-radius: 12px; background: #181818; border: 1px solid #272727; cursor: pointer;
                transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1), border-color 300ms cubic-bezier(0.22, 1, 0.36, 1) }
    .mod-card:hover { background: #1F1F1F; border-color: rgba(229, 72, 77, 0.4) }
    .mod-card:active { transform: scale(0.99) }
    .mod-card:focus-visible { outline: 2px solid #E5484D; outline-offset: 2px }
-   .mod-card__head { gap: 12px; align-items: center }
-   .mod-card__title { gap: 2px; flex-grow: 1; flex-shrink: 1 }
-   .mod-card__desc { color: #9B9B9B; height: 40px; overflow: hidden }
-   .mod-card__foot { gap: 8px; align-items: center }
-   .mod-card__meta { flex-grow: 1; gap: 4px; align-items: center; color: #9B9B9B }
+   .mod-card__body { flex-grow: 1; flex-shrink: 1; flex-basis: 0; gap: 4px }
+   .mod-card__title { gap: 8px; align-items: center }
+   .mod-card__desc { color: #9B9B9B; height: 20px; overflow: hidden }
+   .mod-card__meta { flex-shrink: 0; width: 72px; gap: 4px; align-items: center; color: #9B9B9B }
 
-   .mod-row { display: flex; flex-direction: row; padding: 12px; gap: 12px; border-radius: 12px; background: #181818; border: 1px solid #272727; align-items: center }
-   .mod-row:hover { border-color: rgba(229, 72, 77, 0.4) }
+   .mod-row { display: flex; flex-direction: row; padding: 12px; gap: 12px; border-radius: 12px; background: #181818; border: 1px solid #272727; align-items: center;
+              cursor: pointer; transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1), border-color 300ms cubic-bezier(0.22, 1, 0.36, 1) }
+   .mod-row:hover { background: #1F1F1F; border-color: rgba(229, 72, 77, 0.4) }
    .mod-row:focus-visible { outline: 2px solid #E5484D; outline-offset: 2px }
    .mod-row__text { flex-grow: 1; gap: 2px }
 
@@ -138,9 +149,10 @@ pub const SHEET: &str = zgui::css!(
    .chips { gap: 8px; flex-wrap: wrap }
    .links { gap: 8px; flex-wrap: wrap }
    .tabs { gap: 4px; padding: 4px; border-radius: 12px; background: #181818; border: 1px solid #272727; align-self: flex-start }
-   .tab { display: flex; padding: 8px 12px; border-radius: 8px; color: #9B9B9B; font-weight: 500;
+   .tab { display: flex; padding: 8px 12px; border-radius: 8px; color: #9B9B9B; font-weight: 500; cursor: pointer;
           transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1), color 300ms cubic-bezier(0.22, 1, 0.36, 1) }
-   .tab:hover { color: #FAFAFA }
+   .tab:hover { color: #FAFAFA; background: #1F1F1F }
+   .tab.is-active:hover { background: #EC5D61 }
    .tab:focus-visible { outline: 2px solid #E5484D; outline-offset: 2px }
    .tab.is-active { background: #E5484D; color: #FFFFFF }
 
@@ -162,7 +174,7 @@ pub const SHEET: &str = zgui::css!(
    .update-banner__text { flex-grow: 1 }
 
    .skeleton-row { height: 56px; border-radius: 12px }
-   .skeleton-card { width: 300px; height: 148px; border-radius: 12px }
+   .skeleton-card { height: 82px; border-radius: 12px }
    .settings { gap: 24px; max-width: 640px }
    .settings__toggle { gap: 16px; align-items: center }
    .settings__toggle-text { flex-grow: 1 }

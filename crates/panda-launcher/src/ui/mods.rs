@@ -5,6 +5,7 @@
 
 use super::format::compact;
 use super::mod_page::ModPageProps;
+use super::play::VersionSelectProps;
 use super::state::{self, AppState, core};
 use crate::i18n::{t, tr};
 use crate::icons;
@@ -85,6 +86,9 @@ fn Browse(state: AppState) -> impl IntoView {
     ScrollArea(class = "scroll") {
       column(class = "stack") {
         row(class = "search-row") {
+          column(class = "search-row__version") {
+            VersionSelect(state = state, disabled = Signal::derive_local(move || state.mods_busy.get().is_some()))
+          }
           Input(class = "search-row__input", value = query, placeholder = t("mods-search-placeholder"),
                 a11y:label = t("mods-search-placeholder"))
           Button(disabled = Signal::derive_local(move || loading.get()), on:click = move |_| search(false)) {
@@ -124,11 +128,12 @@ fn Browse(state: AppState) -> impl IntoView {
               }
             }
           }
-          row(class = "grid") {
+          column(class = "list") {
             for hit in move || current().map(|f| f.hits).unwrap_or_default(), key = |h: &SearchHit| h.project_id.clone() {
               ModCard(state = state, hit = hit)
             }
             if move || loading.get() {
+              Skeleton(class = "skeleton-card")
               Skeleton(class = "skeleton-card")
               Skeleton(class = "skeleton-card")
               Skeleton(class = "skeleton-card")
@@ -194,21 +199,19 @@ fn ModCard(state: AppState, hit: SearchHit) -> impl IntoView {
   let open = move || state.mod_open.set(Some(id.get_value()));
   view! {
     control(class = "mod-card", tabindex = Focus::Sequential, a11y:label = hit.title.clone(), on:click = move |_| open()) {
-      row(class = "mod-card__head") {
-        ModIcon(project_id = hit.project_id.clone(), url = hit.icon_url.clone(), size = "md")
-        column(class = "mod-card__title") {
+      ModIcon(project_id = hit.project_id.clone(), url = hit.icon_url.clone(), size = "md")
+      column(class = "mod-card__body") {
+        row(class = "mod-card__title") {
           label(class = "title-3") {{hit.title.clone()}}
           label(class = "caption-5 muted") {{tr("mods-by", &[("author", hit.author.clone())])}}
         }
+        label(class = "body-6 mod-card__desc") {{hit.description.clone()}}
       }
-      label(class = "body-6 mod-card__desc") {{hit.description.clone()}}
-      row(class = "mod-card__foot") {
-        row(class = "mod-card__meta") {
-          Icon(icon = icons::DOWNLOAD, size = IconSize::Sm)
-          label(class = "caption-4") {{compact(hit.downloads)}}
-        }
-        InstallButton(state = state, project = hit.project_id.clone())
+      row(class = "mod-card__meta") {
+        Icon(icon = icons::DOWNLOAD, size = IconSize::Sm)
+        label(class = "caption-4") {{compact(hit.downloads)}}
       }
+      InstallButton(state = state, project = hit.project_id.clone())
     }
   }
 }

@@ -81,15 +81,7 @@ fn PlayPanel(state: AppState) -> impl IntoView {
       row(class = "hero__controls") {
         column(class = "field") {
           label(class = "field__label") {{t("play-version")}}
-          if move || state.versions.get().is_empty() && !state.versions_failed.get() {
-            Skeleton(class = "skeleton-row")
-          } else {
-            NativeSelect(value = Binding::controlled(Signal::derive_local(move || state.version.get()), move |v| state.version.set(v)), disabled = Signal::derive_local(busy), a11y:label = t("play-version")) {
-              for v in move || state.versions.get(), key = |v: &String| v.clone() {
-                NativeSelectOption(value = v.clone()) {{v.clone()}}
-              }
-            }
-          }
+          VersionSelect(state = state, disabled = Signal::derive_local(busy))
         }
         Button(size = ButtonSize::Lg, disabled = Signal::derive_local(busy), on:click = move |_| state::play(state)) {
           Icon(icon = icons::PLAY, size = IconSize::Sm)
@@ -137,6 +129,22 @@ fn PlayStatus(state: AppState) -> impl IntoView {
           label(class = "success title-4") {{t("play-running")}}
         } else {
           label(class = "error") {{move || match state.play.get() { PlayState::Failed(e) => e, _ => String::new() }}}
+        }
+      }
+    }
+  }
+}
+
+/// The Minecraft version picker. Play and Mods share it: both work on the selected version's profile.
+#[component]
+pub fn VersionSelect(state: AppState, disabled: Signal<bool, LocalStorage>) -> impl IntoView {
+  view! {
+    if move || state.versions.get().is_empty() && !state.versions_failed.get() {
+      Skeleton(class = "skeleton-select")
+    } else {
+      NativeSelect(value = Binding::controlled(Signal::derive_local(move || state.version.get()), move |v| state.version.set(v)), disabled = disabled, a11y:label = t("play-version")) {
+        for v in move || state.versions.get(), key = |v: &String| v.clone() {
+          NativeSelectOption(value = v.clone()) {{v.clone()}}
         }
       }
     }

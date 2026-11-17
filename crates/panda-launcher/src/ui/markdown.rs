@@ -115,11 +115,18 @@ fn inline(line: &str) -> String {
     } else if matches!(c, '*' | '_' | '`' | '>') && (c != '_' || !out.ends_with(|p: char| p.is_alphanumeric())) {
       rest = &rest[1..];
     } else {
-      out.push(c);
+      // Geist has no emoji; they would show as empty boxes.
+      if !is_emoji(c) {
+        out.push(c);
+      }
       rest = &rest[c.len_utf8()..];
     }
   }
   out.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn is_emoji(c: char) -> bool {
+  matches!(c as u32, 0x1F000..=0x1FAFF | 0x2600..=0x27BF | 0xFE0F | 0x200D)
 }
 
 /// `[text](url)rest` → (`text`, `rest`).
@@ -157,6 +164,7 @@ mod tests {
         Block::Paragraph("snake_case stays".into()),
       ]
     );
+    assert_eq!(parse("## 📖 Installation Guide ✨"), vec![Block::Heading(2, "Installation Guide".into())]);
     assert_eq!(parse("[![Coffee](https://i/c.png)](https://d) Join [Discord](https://x)"), vec![Block::Paragraph("Join Discord".into())]);
   }
 

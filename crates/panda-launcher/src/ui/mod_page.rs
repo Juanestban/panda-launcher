@@ -6,6 +6,7 @@
 use super::format::{compact, date};
 use super::markdown::{self, Block};
 use super::mods::{InstallButtonProps, ModIconProps, NoticeProps};
+use super::play::VersionSelectProps;
 use super::state::{self, AppState, core};
 use crate::i18n::{t, tr};
 use crate::icons;
@@ -165,7 +166,12 @@ fn TabButton(tab: RwSignal<Tab>, value: Tab, #[prop(into)] label: String) -> imp
 fn Versions(state: AppState, builds: RwSignal<Option<Result<Vec<ModVersion>, String>>>) -> impl IntoView {
   view! {
     column(class = "list") {
-      label(class = "body-6 muted") {{move || tr("mods-versions-for", &[("version", state.version.get())])}}
+      row(class = "version-filter") {
+        column(class = "version-filter__select") {
+          VersionSelect(state = state, disabled = Signal::derive_local(move || state.mods_busy.get().is_some()))
+        }
+        label(class = "body-6 muted version-filter__hint") {{move || tr("mods-versions-for", &[("version", state.version.get())])}}
+      }
       if move || builds.get().is_none() {
         Skeleton(class = "skeleton-row")
         Skeleton(class = "skeleton-row")
