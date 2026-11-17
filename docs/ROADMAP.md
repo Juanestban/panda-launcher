@@ -55,22 +55,26 @@ Status keys: `[ ]` todo, `[~]` in progress, `[x]` done.
 - [x] Settings screen (language, memory, auto-update), saved to `settings.json`.
 - [x] Download and launch progress; skeleton loading; inline errors.
 - [x] Spanish and English with Fluent, defaulting to the system locale. ([ADR 0011](adr/0011-fluent-i18n-es-en.md))
+- [x] Black and red theme and the panda mark (window, exe, MSI). ([design system](design-system.md))
+- [x] Mod cards with Modrinth icons; a mod page inside the launcher (stats, links, description, every Fabric build for the version) with "install this build".
 
 ## Phase 6: Distribution and updates → **v1.0**
 
-- [ ] `wix/main.wxs` per-user MSI, plus `scripts/package.ps1`, following the archi-games layout. ([ADR 0009](adr/0009-msi-and-portable-distribution.md))
-- [ ] `release.yml` on tag `v*.*.*`: checks the tag against the Cargo version, then tests, packages, signs and uploads the MSI, the portable exe, `SHA256SUMS.txt` and the `.sig` files.
-- [ ] Updater: check on start and hourly, download on click, verify SHA-256 and ed25519, install, relaunch with `--after-update`. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
-- [ ] Single-instance lock with retry while the old process exits.
-- [ ] `RELEASING.md`.
+- [x] `wix/main.wxs` per-user MSI, plus `scripts/package.ps1`, following the archi-games layout. ([ADR 0009](adr/0009-msi-and-portable-distribution.md))
+- [x] `release.yml` on tag `v*.*.*`: checks the tag against the Cargo version, then tests, packages, signs and uploads the MSI, the portable exe, `SHA256SUMS.txt` and the `.sig` files.
+- [x] Updater: check on start and hourly, download on click, verify SHA-256 and ed25519, install, relaunch with `--after-update`. ([ADR 0010](adr/0010-github-releases-updater-signed.md))
+- [x] Single-instance lock with retry while the old process exits.
+- [x] `RELEASING.md`.
+- [ ] First real release: configure the secrets in RELEASING.md, tag `v0.1.0`, install the MSI on Windows, then publish `v0.1.1` and update in-app (MSI and portable).
 
 ## Phase 7: Website
 
-- [ ] `web/` Astro site on GitHub Pages, with `/es` and `/en`. ([ADR 0012](adr/0012-astro-website-github-pages.md))
-- [ ] Tabs: Home, Download, Releases, Docs (guide + FAQ), Roadmap (from this file).
-- [ ] Design tokens shared with the launcher.
-- [ ] The release workflow redeploys the site so the download version is baked in.
-- [ ] "Not an official Minecraft product" disclaimer in the footer.
+- [x] `web/` Astro site on GitHub Pages, with `/es` and `/en`. ([ADR 0012](adr/0012-astro-website-github-pages.md))
+- [x] One landing page per language (hero, features, tagline, how it works with real screenshots, FAQ, download), privacy page, branded 404.
+- [x] Design tokens shared with the launcher.
+- [x] The release workflow redeploys the site so the download version is baked in.
+- [x] "Not an official Minecraft product" disclaimer in the footer.
+- [ ] Separate Releases, Docs and Roadmap pages (today: links to GitHub Releases and the FAQ on the home page).
 
 ## Later (v2+)
 

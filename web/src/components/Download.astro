@@ -1,0 +1,30 @@
+---
+// The download call to action, identical at the top and the bottom of the page.
+import Icon from "./Icon.astro";
+import { t, type Lang } from "../i18n";
+import { REPO_URL, type Release } from "../release";
+
+const { lang, release, size = "lg" } = Astro.props as { lang: Lang; release: Release | null; size?: "md" | "lg" };
+const s = t(lang);
+const msi = release?.msi;
+---
+<div class="download">
+  <div class="download__buttons">
+    <a class:list={["button", `button--${size}`]} href={msi?.url ?? `${REPO_URL}/releases`}>
+      <Icon name="windows" />{s.cta}
+    </a>
+    <a class:list={["button button--ghost", `button--${size}`]} href={REPO_URL}>
+      <Icon name="github" />{s.ctaSource}
+    </a>
+  </div>
+  {release ? (
+    <p class="caption-2 muted download__meta">
+      <span class="mono">{s.version(release.version, release.date)}</span>
+      {msi && <span>{s.msiSize(msi.mb)}</span>}
+      {release.portable && <a href={release.portable.url}>{s.portable(release.portable.mb)}</a>}
+      <a href={release.page}>{s.releases}</a>
+    </p>
+  ) : (
+    <p class="caption-2 muted download__meta">{s.noRelease}</p>
+  )}
+</div>

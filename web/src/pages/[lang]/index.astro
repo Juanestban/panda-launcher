@@ -1,0 +1,130 @@
+---
+import Base from "../../layouts/Base.astro";
+import Download from "../../components/Download.astro";
+import Icon from "../../components/Icon.astro";
+import { href, langs, t, type Lang } from "../../i18n";
+import { latestRelease } from "../../release";
+
+export const getStaticPaths = () => langs.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const release = await latestRelease();
+const shots = ["play", "mods", "mod"];
+const words = s.tagline.map((line) => line.split(" "));
+const small = [
+  { icon: "puzzle", ...s.features.modrinth },
+  { icon: "shield", ...s.features.legal },
+  { icon: "lock", ...s.features.secrets },
+  { icon: "arrows", ...s.features.updates },
+] as const;
+---
+<Base lang={lang} title={s.htmlTitle} description={s.metaDescription} home>
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="eyebrow">{s.heroEyebrow}</p>
+      <h1 class="heading-1 hero__title">{s.heroTitle[0]} <br />{s.heroTitle[1]}</h1>
+      <p class="body-3 muted hero__text">{s.heroText}</p>
+      <Download lang={lang} release={release} />
+      <p class="caption-4 hero__proof">{s.proof}</p>
+    </div>
+    <figure class="window hero__shot">
+      <img src={href("screens/play.jpg")} alt={s.shotPlay} width="1600" height="1053" fetchpriority="high" />
+    </figure>
+  </section>
+
+  <section class="section reveal" id="features" aria-labelledby="features-title">
+    <p class="eyebrow">{s.featuresEyebrow}</p>
+    <h2 class="heading-3" id="features-title">{s.featuresTitle[0]} <br />{s.featuresTitle[1]}</h2>
+    <div class="bento">
+      <article class="card card--wide">
+        <div class="card__copy">
+          <span class="card__icon"><Icon name="folders" /></span>
+          <h3 class="heading-6">{s.features.folders.title}</h3>
+          <p class="body-6 muted">{s.features.folders.text}</p>
+        </div>
+        <figure class="tree" aria-label={s.treeCaption}>
+          <figcaption class="caption-4 muted">{s.treeCaption}</figcaption>
+          <pre class="mono"><code><span class="tree__dir">profiles/</span>
+├─ <span class="tree__dir">1.21.10-fabric/</span>
+│  └─ <span class="tree__dir">mods/</span>
+│     ├─ fabric-api-0.138.4+1.21.10.jar
+│     ├─ sodium-fabric-0.7.3+mc1.21.10.jar
+│     └─ iris-fabric-1.9.7+mc1.21.10.jar
+└─ <span class="tree__dir tree__hot">26.3-fabric/</span>
+   └─ <span class="tree__dir">mods/</span>
+      └─ sodium-fabric-0.9.3-beta.5+mc26.3.jar</code></pre>
+        </figure>
+      </article>
+      {small.map((f) => (
+        <article class="card">
+          <span class="card__icon"><Icon name={f.icon} /></span>
+          <h3 class="heading-6">{f.title}</h3>
+          <p class="body-6 muted">{f.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="tagline" aria-label={s.tagline.join(" ")}>
+    <p class="heading-1" aria-hidden="true">
+      {words.map((line) => (
+        <span class="tagline__line">{line.map((w) => <span class="tagline__word">{w} </span>)}</span>
+      ))}
+    </p>
+  </section>
+
+  <section class="section reveal" id="how" aria-labelledby="how-title">
+    <p class="eyebrow">{s.howEyebrow}</p>
+    <h2 class="heading-3" id="how-title">{s.howTitle[0]} <br />{s.howTitle[1]}</h2>
+    <ol class="steps">
+      {s.steps.map((step, i) => (
+        <li class="step">
+          <div class="step__copy">
+            <span class="step__number mono" aria-hidden="true">0{i + 1}</span>
+            <h3 class="heading-5">{step.title}</h3>
+            <p class="body-3 muted">{step.text}</p>
+          </div>
+          <figure class="window">
+            <img src={href(`screens/${shots[i]}.jpg`)} alt={step.alt} width="1600" height="1053" loading="lazy" />
+          </figure>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="section reveal" id="faq" aria-labelledby="faq-title">
+    <p class="eyebrow">{s.faqEyebrow}</p>
+    <h2 class="heading-3" id="faq-title">{s.faqTitle}</h2>
+    <div class="faq">
+      {s.faq.map((item) => (
+        <details class="faq__item">
+          <summary class="title-2">{item.q}<Icon name="caret" /></summary>
+          <p class="body-3 muted">{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="final reveal" id="download" aria-labelledby="final-title">
+    <img class="final__mark" src={href("favicon.svg")} alt="" width="96" height="96" loading="lazy" />
+    <h2 class="heading-2 hero__title" id="final-title">{s.finalTitle[0]} <br />{s.finalTitle[1]}</h2>
+    <p class="body-3 muted">{s.finalText}</p>
+    <Download lang={lang} release={release} />
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: s.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  })} />
+
+  <script>
+    // Tagline: each word lights up as it crosses the line at 60% of the viewport, once, in reading order.
+    const words = document.querySelectorAll(".tagline__word");
+    const light = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("is-lit"), light.unobserve(e.target))),
+      { rootMargin: "0px 0px -40% 0px" },
+    );
+    words.forEach((w) => light.observe(w));
+  </script>
+</Base>

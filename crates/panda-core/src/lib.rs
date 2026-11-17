@@ -10,6 +10,7 @@ pub mod mods;
 pub mod net;
 pub mod paths;
 pub mod settings;
+pub mod update;
 pub mod version;
 
 /// Errors from installing and launching (auth has its own [`auth::AuthError`]).
@@ -43,6 +44,8 @@ pub enum Error {
   RateLimited,
   #[error("Mojang has no Java runtime {0} for this platform")]
   NoJavaRuntime(String),
+  #[error("the update is not signed by Panda Launcher; it was not installed")]
+  BadSignature,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

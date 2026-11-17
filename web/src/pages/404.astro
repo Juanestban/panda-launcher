@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import { href, t } from "../i18n";
+
+// Pages serves one 404 for every path, so it is in Spanish with the English line below.
+const es = t("es").notFound;
+const en = t("en").notFound;
+---
+<Base lang="es" title={`${es.title} · Panda Launcher`} description={es.text} path="">
+  <section class="page page--center">
+    <img src={href("favicon.svg")} alt="" width="96" height="96" />
+    <p class="eyebrow mono">404</p>
+    <h1 class="heading-3 hero__title">{es.title}</h1>
+    <p class="body-3 muted">{es.text}</p>
+    <p class="body-6 muted" lang="en">{en.title}. {en.text}</p>
+    <div class="download__buttons page__back">
+      <a class="button" href={href("es/")}>{es.back}</a>
+      <a class="button button--ghost" href={href("en/")} lang="en">{en.back}</a>
+    </div>
+  </section>
+</Base>

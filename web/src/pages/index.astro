@@ -1,0 +1,21 @@
+---
+// Sends visitors to their language; Spanish when the browser does not prefer English.
+import { href } from "../i18n";
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panda Launcher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href={href("favicon.svg")} />
+    <script is:inline define:vars={{ es: href("es/"), en: href("en/") }}>
+      location.replace(navigator.languages.some((l) => l.startsWith("es")) || !navigator.languages.some((l) => l.startsWith("en")) ? es : en);
+    </script>
+    <meta http-equiv="refresh" content={`0; url=${href("es/")}`} />
+  </head>
+  <body style="background:#000;color:#fafafa;font-family:sans-serif">
+    <p><a href={href("es/")}>Español</a> · <a href={href("en/")}>English</a></p>
+  </body>
+</html>

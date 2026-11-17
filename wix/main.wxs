@@ -1,0 +1,59 @@
+<!--
+  Panda Launcher installer (WiX 5, ADR 0009). Per-user: installs to %LOCALAPPDATA%\Programs\Panda Launcher
+  with a Start menu shortcut and never asks for administrator rights. Built by scripts/package.ps1,
+  which passes Version, ExePath and IconPath. The updater (panda-core::update) relies on this folder name.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="Panda Launcher"
+    Manufacturer="Panda Launcher"
+    Version="$(var.Version)"
+    UpgradeCode="80E7ECE1-9BE2-40ED-BB8F-54356A357C92"
+    Scope="perUser"
+    Compressed="yes">
+
+    <!-- Installing a newer version replaces the old one. -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Panda Launcher is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon" SourceFile="$(var.IconPath)" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Panda Launcher" />
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+
+    <ComponentGroup Id="App" Directory="INSTALLFOLDER">
+      <Component Id="Executable" Guid="8678CD7B-C7EF-4BBB-8A2D-F770F74C13D1">
+        <File Id="PandaLauncherExe" Source="$(var.ExePath)" Name="panda-launcher.exe" />
+        <!-- Per-user components need an HKCU key path. -->
+        <RegistryValue Root="HKCU" Key="Software\Panda Launcher" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveProgramsFolder" Directory="ProgramsFolder" On="uninstall" />
+      </Component>
+      <Component Id="StartMenuShortcut">
+        <Shortcut
+          Id="PandaLauncherShortcut"
+          Directory="ProgramMenuFolder"
+          Name="Panda Launcher"
+          Target="[INSTALLFOLDER]panda-launcher.exe"
+          WorkingDirectory="INSTALLFOLDER"
+          Icon="AppIcon" />
+        <RegistryValue Root="HKCU" Key="Software\Panda Launcher" Name="shortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- After an in-app update (msiexec ... LAUNCHAPP=1), start the new version. -->
+    <CustomAction Id="LaunchAfterUpdate" FileRef="PandaLauncherExe" ExeCommand="--after-update" Return="asyncNoWait" Impersonate="yes" Execute="immediate" />
+    <InstallExecuteSequence>
+      <Custom Action="LaunchAfterUpdate" After="InstallFinalize" Condition="LAUNCHAPP = 1 AND NOT REMOVE" />
+    </InstallExecuteSequence>
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="App" />
+    </Feature>
+  </Package>
+</Wix>

@@ -27,11 +27,12 @@ pub async fn fetch(http: &Client, f: &FileSpec) -> Result<()> {
   {
     return Ok(());
   }
-  download_verified::<Sha1>(http, &f.url, &f.path, &f.sha1).await
+  download_verified::<Sha1>(http, &f.url, &f.path, &f.sha1, |_, _| {}).await
 }
 
 /// Stream `url` to `path`, hashing with `D` (SHA-1 for Mojang, SHA-512 for Modrinth); a mismatch leaves nothing behind.
-pub async fn download_verified<D: Digest>(http: &Client, url: &str, path: &Path, expected_hex: &str) -> Result<()> {
+/// `progress(bytes, total)` follows the body; `total` is 0 when the server does not say.
+pub async fn download_verified<D: Digest>(http: &Client, url: &str, path: &Path, expected_hex: &str, progress: impl Fn(u64, u64)) -> Result<()> {
   if let Some(dir) = path.parent() {
     tokio::fs::create_dir_all(dir).await?;
   }
@@ -40,9 +41,12 @@ pub async fn download_verified<D: Digest>(http: &Client, url: &str, path: &Path,
   let mut response = http.get(url).send().await?.error_for_status()?;
   let mut file = tokio::fs::File::create(&tmp).await?;
   let mut hash = D::new();
+  let (total, mut done) = (response.content_length().unwrap_or(0), 0);
   while let Some(chunk) = response.chunk().await? {
     hash.update(&chunk);
     file.write_all(&chunk).await?;
+    done += chunk.len() as u64;
+    progress(done, total);
   }
   file.flush().await?;
   drop(file);
@@ -82,7 +86,7 @@ pub async fn get_json<T: DeserializeOwned>(http: &Client, url: &str) -> Result<T
   Ok(http.get(url).send().await?.error_for_status()?.json().await?)
 }
 
-fn hex(bytes: &[u8]) -> String {
+pub(crate) fn hex(bytes: &[u8]) -> String {
   bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 

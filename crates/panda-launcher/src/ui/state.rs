@@ -6,8 +6,10 @@ use panda_core::launch::{Launch, Player};
 use panda_core::net::Client;
 use panda_core::paths::Dirs;
 use panda_core::settings::{self, Settings};
+use panda_core::update;
 use panda_core::{auth, fabric, java, version};
 use std::sync::OnceLock;
+use std::time::Duration;
 use zgui::prelude::*;
 
 /// What every action needs: one HTTP client and the data folder.
@@ -54,6 +56,17 @@ pub enum PlayState {
   Failed(String),
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub enum UpdateState {
+  Idle,
+  Checking,
+  UpToDate,
+  Available(update::Update),
+  /// Fraction downloaded, when the size is known.
+  Downloading(Option<f64>),
+  Failed(String),
+}
+
 /// Signals the screens share. All `Send`, so background work can post to them.
 #[derive(Clone, Copy)]
 pub struct AppState {
@@ -66,6 +79,15 @@ pub struct AppState {
   pub version: RwSignal<String>,
   pub play: RwSignal<PlayState>,
   pub settings: RwSignal<Settings>,
+  pub update: RwSignal<UpdateState>,
+  /// The mod whose page is open inside the Mods tab.
+  pub mod_open: RwSignal<Option<String>>,
+  /// Bumped after any install or removal, so lists re-read `panda-mods.json`.
+  pub mods_rev: RwSignal<u32>,
+  /// Project being installed, so only its buttons show work.
+  pub mods_busy: RwSignal<Option<String>>,
+  /// The last install or removal outcome.
+  pub mods_notice: RwSignal<Option<Result<String, String>>>,
 }
 
 impl AppState {
@@ -79,6 +101,11 @@ impl AppState {
       version: RwSignal::new(String::new()),
       play: RwSignal::new(PlayState::Idle),
       settings: RwSignal::new(settings::load(&core().dirs)),
+      update: RwSignal::new(UpdateState::Idle),
+      mod_open: RwSignal::new(None),
+      mods_rev: RwSignal::new(0),
+      mods_busy: RwSignal::new(None),
+      mods_notice: RwSignal::new(None),
     }
   }
 }
@@ -231,4 +258,103 @@ pub fn play(state: AppState) {
     let _ = blocking(move || child.wait()).await;
     play.set(PlayState::Idle);
   });
+}
+
+async fn sleep(d: Duration) {
+  background(tokio::time::sleep(d)).await;
+}
+
+/// ADR 0010: 3 s after start, then hourly (5 min after a failure). Automatic failures stay silent.
+pub fn start_update_checks(state: AppState) {
+  if !update::enabled() {
+    return;
+  }
+  spawn(async move {
+    let mut wait = Duration::from_secs(3);
+    loop {
+      sleep(wait).await;
+      wait = Duration::from_secs(3600);
+      let busy = matches!(state.update.get_untracked(), UpdateState::Available(_) | UpdateState::Downloading(_));
+      if busy || !state.settings.get_untracked().auto_update {
+        continue;
+      }
+      match background(async { update::check(&core().http).await }).await {
+        Ok(Some(u)) => state.update.set(UpdateState::Available(u)),
+        Ok(None) => {}
+        Err(_) => wait = Duration::from_secs(300),
+      }
+    }
+  });
+}
+
+/// The "Check for updates" button in About; unlike the automatic check it reports every outcome.
+pub fn check_updates(state: AppState) {
+  state.update.set(UpdateState::Checking);
+  spawn(async move {
+    state.update.set(match background(async { update::check(&core().http).await }).await {
+      Ok(Some(u)) => UpdateState::Available(u),
+      Ok(None) => UpdateState::UpToDate,
+      Err(e) => UpdateState::Failed(message(e)),
+    });
+  });
+}
+
+/// Download, verify, hand over to the installer and quit. Only ever runs on a click.
+pub fn install_update(state: AppState) {
+  let UpdateState::Available(u) = state.update.get_untracked() else { return };
+  state.update.set(UpdateState::Downloading(None));
+  let (ui, signal) = (ui(), state.update);
+  let progress = move |done: u64, total: u64| {
+    let fraction = (total > 0).then(|| done as f64 / total as f64);
+    ui.post(move || signal.set(UpdateState::Downloading(fraction)));
+  };
+  spawn(async move {
+    let result = background(async move {
+      let path = update::download(&core().http, &u, progress).await?;
+      update::apply(&u, &path)
+    })
+    .await;
+    match result {
+      // The installer or the new exe takes over; settings are already on disk.
+      Ok(()) => std::process::exit(0),
+      Err(e) => state.update.set(UpdateState::Failed(message(e))),
+    }
+  });
+}
+
+/// Mods installed in the selected version's profile; re-read when it or `mods_rev` changes.
+pub fn installed_mods(state: AppState) -> Vec<panda_core::mods::InstalledMod> {
+  state.mods_rev.track();
+  panda_core::mods::list(&core().dirs, &state.version.get()).map(|l| l.mods).unwrap_or_default()
+}
+
+/// Install a mod (its newest build, or `version`) with its dependencies into the selected profile.
+pub fn install_mod(state: AppState, project: String, version: Option<String>) {
+  let game = state.version.get_untracked();
+  state.mods_busy.set(Some(project.clone()));
+  spawn(async move {
+    let r = background(async move { panda_core::mods::install(&core().http, &core().dirs, &game, &project, version.as_deref()).await }).await;
+    state.mods_notice.set(Some(r.map(|names| tr("mods-installed-ok", &[("names", names.join(", "))])).map_err(message)));
+    state.mods_busy.set(None);
+    state.mods_rev.update(|n| *n += 1);
+  });
+}
+
+pub fn remove_mod(state: AppState, project: &str) {
+  let r = panda_core::mods::uninstall(&core().dirs, &state.version.get_untracked(), project, false);
+  state.mods_notice.set(Some(r.map(|names| tr("mods-removed-ok", &[("names", names.join(", "))])).map_err(message)));
+  state.mods_rev.update(|n| *n += 1);
+}
+
+/// The panda mark as a file: `image` elements load from paths. Rewritten each start so a new build's art wins.
+pub fn logo_path() -> Option<String> {
+  static LOGO: OnceLock<Option<String>> = OnceLock::new();
+  LOGO
+    .get_or_init(|| {
+      let path = core().dirs.root.join("cache").join("panda.png");
+      std::fs::create_dir_all(path.parent()?).ok()?;
+      std::fs::write(&path, include_bytes!("../../assets/icon/panda-512.png")).ok()?;
+      Some(path.to_string_lossy().into_owned())
+    })
+    .clone()
 }

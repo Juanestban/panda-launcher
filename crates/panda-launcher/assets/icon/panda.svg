@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Panda Launcher mark: a panda drawn like a soft bun, thick outline, flat fills. -->
+  <defs>
+    <clipPath id="head">
+      <path d="M52 304C52 196 146 128 256 128S460 196 460 304C460 388 378 438 256 438S52 388 52 304Z"/>
+    </clipPath>
+    <clipPath id="mouth">
+      <path d="M226 334Q256 384 286 334Z"/>
+    </clipPath>
+  </defs>
+  <circle cx="138" cy="160" r="62" fill="#1A1414" stroke="#000" stroke-width="14"/>
+  <circle cx="374" cy="160" r="62" fill="#1A1414" stroke="#000" stroke-width="14"/>
+  <circle cx="138" cy="160" r="26" fill="#E5484D"/>
+  <circle cx="374" cy="160" r="26" fill="#E5484D"/>
+  <path d="M52 304C52 196 146 128 256 128S460 196 460 304C460 388 378 438 256 438S52 388 52 304Z" fill="#FBF0DF"/>
+  <g clip-path="url(#head)">
+    <ellipse cx="256" cy="452" rx="250" ry="92" fill="#F3DCC4"/>
+    <ellipse cx="204" cy="184" rx="104" ry="30" fill="#FFFFFF" opacity="0.65" transform="rotate(-12 204 184)"/>
+  </g>
+  <path d="M52 304C52 196 146 128 256 128S460 196 460 304C460 388 378 438 256 438S52 388 52 304Z" fill="none" stroke="#000" stroke-width="14"/>
+  <ellipse cx="180" cy="290" rx="46" ry="62" fill="#1A1414" transform="rotate(38 180 290)"/>
+  <ellipse cx="332" cy="290" rx="46" ry="62" fill="#1A1414" transform="rotate(-38 332 290)"/>
+  <circle cx="190" cy="282" r="19" fill="#FFFFFF"/>
+  <circle cx="322" cy="282" r="19" fill="#FFFFFF"/>
+  <circle cx="194" cy="285" r="11" fill="#000"/>
+  <circle cx="318" cy="285" r="11" fill="#000"/>
+  <circle cx="188" cy="277" r="5" fill="#FFFFFF"/>
+  <circle cx="312" cy="277" r="5" fill="#FFFFFF"/>
+  <ellipse cx="256" cy="316" rx="17" ry="11" fill="#1A1414"/>
+  <path d="M226 334Q256 384 286 334Z" fill="#1A1414" stroke="#000" stroke-width="8" stroke-linejoin="round"/>
+  <g clip-path="url(#mouth)">
+    <ellipse cx="256" cy="366" rx="18" ry="12" fill="#E5484D"/>
+  </g>
+  <ellipse cx="126" cy="348" rx="28" ry="15" fill="#FF8FA3" opacity="0.75"/>
+  <ellipse cx="386" cy="348" rx="28" ry="15" fill="#FF8FA3" opacity="0.75"/>
+</svg>

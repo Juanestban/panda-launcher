@@ -12,7 +12,7 @@ panda-launcher/
       meta/               Mojang version manifest, Fabric meta, Java runtimes
       profile/            per-version directories, launch arguments, process spawn
       mods/               Modrinth search/install/uninstall, panda-mods.json
-      update/             GitHub Releases check, download, verify, apply
+      update.rs           GitHub Releases check, download, verify, apply
     panda-launcher/       binary: zgui UI, Fluent locales, wiring to core
       locales/{es,en}.ftl
   wix/main.wxs            MSI definition

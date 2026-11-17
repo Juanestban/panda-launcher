@@ -35,8 +35,8 @@ pub fn SettingsPage(state: AppState) -> impl IntoView {
 
   view! {
     column(class = "page-header") {
-      label(class = "page-title") {{t("settings-title")}}
-      label(class = "page-subtitle") {{t("settings-subtitle")}}
+      label(class = "heading-4") {{t("settings-title")}}
+      label(class = "body-6 muted") {{t("settings-subtitle")}}
     }
     column(class = "panel settings") {
       column(class = "field") {

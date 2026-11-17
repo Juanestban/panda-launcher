@@ -1,0 +1,22 @@
+---
+import Base from "../../layouts/Base.astro";
+import { href, langs, t, type Lang } from "../../i18n";
+
+export const getStaticPaths = () => langs.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const p = t(lang).privacy;
+---
+<Base lang={lang} title={`${p.title} · Panda Launcher`} description={p.description} path="privacy/">
+  <article class="page">
+    <p class="eyebrow">Panda Launcher</p>
+    <h1 class="heading-3">{p.title}</h1>
+    <p class="caption-2 muted">{p.updated}</p>
+    {p.sections.map((section) => (
+      <>
+        <h2 class="heading-6">{section.h}</h2>
+        {section.p.map((text) => <p class="body-3 muted">{text}</p>)}
+      </>
+    ))}
+    <a class="button button--ghost button--sm page__back" href={href(`${lang}/`)}>{p.back}</a>
+  </article>
+</Base>

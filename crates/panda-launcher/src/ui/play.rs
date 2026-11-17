@@ -11,8 +11,9 @@ use zgui_ui_icons::prelude::*;
 pub fn PlayPage(state: AppState) -> impl IntoView {
   view! {
     column(class = "page-header") {
-      label(class = "page-title") {{t("play-title")}}
-      label(class = "page-subtitle") {{t("play-subtitle")}}
+      label(class = "eyebrow") {{t("play-eyebrow")}}
+      label(class = "heading-4") {{t("play-title")}}
+      label(class = "body-6 muted") {{t("play-subtitle")}}
     }
     if move || matches!(state.account.get(), Account::SignedIn { .. }) {
       PlayPanel(state = state)
@@ -35,9 +36,10 @@ fn SignInPanel(state: AppState) -> impl IntoView {
     _ => None,
   };
   view! {
-    column(class = "panel") {
+    row(class = "hero") {
+    column(class = "hero__text") {
       if move || code().is_some() {
-        label(class = "field__label") {{t("account-code-title")}}
+        label(class = "eyebrow") {{t("account-code-title")}}
         label(class = "code", a11y:live = zgui::vocab::Live::Polite) {{move || code().map(|c| c.0).unwrap_or_default()}}
         label(class = "muted") {{move || tr("account-code-hint", &[("uri", code().map(|c| c.1).unwrap_or_default())])}}
         row(class = "search-row") {
@@ -49,14 +51,19 @@ fn SignInPanel(state: AppState) -> impl IntoView {
         }
         Skeleton(class = "skeleton-row")
       } else {
-        label(class = "muted") {{t("play-sign-in-first")}}
-        row {
+        label(class = "eyebrow") {{t("play-welcome")}}
+        label(class = "heading-5") {{t("play-sign-in-title")}}
+        label(class = "body-6 muted") {{t("play-sign-in-first")}}
+        row(class = "hero__controls") {
           Button(
+            size = ButtonSize::Lg,
             disabled = Signal::derive_local(move || state.account.get() == Account::Checking),
             on:click = move |_| pending.set(Some(state::sign_in(state)))
           ) {{t("account-sign-in")}}
         }
       }
+    }
+      image(class = "hero__art", src = state::logo_path(), alt = "")
     }
   }
 }
@@ -64,9 +71,14 @@ fn SignInPanel(state: AppState) -> impl IntoView {
 #[component]
 fn PlayPanel(state: AppState) -> impl IntoView {
   let busy = move || matches!(state.play.get(), PlayState::Working { .. } | PlayState::Running);
+  let mods = move || state::installed_mods(state).len();
   view! {
-    column(class = "panel") {
-      row(class = "play-row") {
+    row(class = "hero") {
+     column(class = "hero__text") {
+      label(class = "eyebrow") {{t("play-ready")}}
+      label(class = "heading-4") {{move || format!("Minecraft {}", state.version.get())}}
+      label(class = "body-6 muted") {{move || tr("play-hero-mods", &[("count", mods().to_string())])}}
+      row(class = "hero__controls") {
         column(class = "field") {
           label(class = "field__label") {{t("play-version")}}
           if move || state.versions.get().is_empty() && !state.versions_failed.get() {
@@ -84,10 +96,26 @@ fn PlayPanel(state: AppState) -> impl IntoView {
           label {{t("play-button")}}
         }
       }
-      if move || state.versions_failed.get() {
-        label(class = "error") {{t("play-versions-error")}}
+     }
+      image(class = "hero__art", src = state::logo_path(), alt = "")
+    }
+    if move || state.versions_failed.get() {
+      label(class = "error") {{t("play-versions-error")}}
+    }
+    PlayStatus(state = state)
+    row(class = "stats") {
+      column(class = "stat") {
+        label(class = "stat__value") {{move || mods().to_string()}}
+        label(class = "caption-4 muted") {{t("play-stat-mods")}}
       }
-      PlayStatus(state = state)
+      column(class = "stat") {
+        label(class = "stat__value") {{move || format!("{} GB", state.settings.get().memory_mb / 1024)}}
+        label(class = "caption-4 muted") {{t("play-stat-memory")}}
+      }
+      column(class = "stat") {
+        label(class = "stat__value") {"Fabric"}
+        label(class = "caption-4 muted") {{t("play-stat-loader")}}
+      }
     }
   }
 }
@@ -106,7 +134,7 @@ fn PlayStatus(state: AppState) -> impl IntoView {
         label(class = "muted") {{move || working().filter(|w| w.2 > 0).map(|w| tr("play-files", &[("done", w.1.to_string()), ("total", w.2.to_string())])).unwrap_or_default()}}
       } else {
         if move || state.play.get() == PlayState::Running {
-          label(class = "success") {{t("play-running")}}
+          label(class = "success title-4") {{t("play-running")}}
         } else {
           label(class = "error") {{move || match state.play.get() { PlayState::Failed(e) => e, _ => String::new() }}}
         }

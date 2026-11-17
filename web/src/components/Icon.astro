@@ -1,0 +1,6 @@
+---
+import { icons, type IconName } from "../icons";
+const { name, size = 20 } = Astro.props as { name: IconName; size?: 16 | 20 | 24 };
+const svg = icons[name].replace("<svg ", `<svg width="${size}" height="${size}" aria-hidden="true" focusable="false" `);
+---
+<Fragment set:html={svg} />

@@ -1,0 +1,137 @@
+---
+import "@fontsource-variable/geist";
+import "@fontsource-variable/geist-mono";
+import "../styles/site.css";
+import Icon from "../components/Icon.astro";
+import { href, t, type Lang } from "../i18n";
+import { REPO_URL } from "../release";
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Path of this page without the language, e.g. "" or "privacy/", for the language switch. */
+  path?: string;
+  /** Section links point to the home page when this is not the home page. */
+  home?: boolean;
+}
+const { lang, title, description, path = "", home = false } = Astro.props;
+const s = t(lang);
+const other: Lang = lang === "es" ? "en" : "es";
+const section = (id: string) => (home ? `#${id}` : `${href(`${lang}/`)}#${id}`);
+const canonical = new URL(href(`${lang}/${path}`), Astro.site);
+const og = new URL(href("screens/play.jpg"), Astro.site);
+const links = [
+  { id: "features", label: s.nav.features },
+  { id: "how", label: s.nav.how },
+  { id: "faq", label: s.nav.faq },
+];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={other} href={new URL(href(`${other}/${path}`), Astro.site)} />
+    <link rel="icon" type="image/svg+xml" href={href("favicon.svg")} />
+    <link rel="apple-touch-icon" href={href("apple-touch-icon.png")} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:locale" content={lang === "es" ? "es_ES" : "en_US"} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{s.skip}</a>
+
+    <header class="nav" data-nav>
+      <a class="nav__brand" href={href(`${lang}/`)} aria-label="Panda Launcher">
+        <img src={href("favicon.svg")} alt="" width="28" height="28" />
+        <span class="title-4">Panda Launcher</span>
+      </a>
+      <nav class="nav__links" aria-label={s.nav.menu}>
+        {links.map((l) => <a class="title-4" href={section(l.id)} data-section={l.id}>{l.label}</a>)}
+      </nav>
+      <a class="nav__lang caption-3" href={href(`${other}/${path}`)} hreflang={other} lang={other} aria-label={s.nav.otherLabel}>{other.toUpperCase()}</a>
+      <a class="button button--sm nav__cta" href={section("download")}>{s.nav.download}</a>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label={s.nav.menu}
+              data-open={s.nav.menu} data-close={s.nav.close}>
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <div class="menu" id="menu" hidden>
+      <nav aria-label={s.nav.menu}>
+        {links.map((l) => <a class="heading-5" href={section(l.id)}>{l.label}</a>)}
+        <a class="heading-5" href={section("download")}>{s.nav.download}</a>
+        <a class="heading-5 muted" href={href(`${other}/${path}`)} hreflang={other} lang={other}>{s.nav.other}</a>
+      </nav>
+    </div>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="footer__row">
+        <p class="caption-2 muted footer__disclaimer">{s.footer.disclaimer}</p>
+        <nav class="footer__links caption-1" aria-label="Footer">
+          <a href={href(`${lang}/privacy/`)}>{s.footer.privacy}</a>
+          <a href={`${REPO_URL}/blob/main/LICENSE-MIT`}>{s.footer.license}</a>
+          <a href={REPO_URL}><Icon name="github" size={16} />{s.footer.source}</a>
+        </nav>
+      </div>
+      <p class="footer__mark" aria-hidden="true">panda</p>
+    </footer>
+
+    <script>
+      // Floating nav menu (mobile): full height panel, links arrive one after another.
+      const toggle = document.querySelector<HTMLButtonElement>(".nav__toggle")!;
+      const menu = document.getElementById("menu")!;
+      const setOpen = (open: boolean) => {
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute("aria-label", open ? toggle.dataset.close! : toggle.dataset.open!);
+        document.body.classList.toggle("menu-open", open);
+        if (open) {
+          menu.hidden = false;
+          requestAnimationFrame(() => menu.classList.add("is-open"));
+        } else {
+          menu.classList.remove("is-open");
+          // Hide after the fade, unless it was reopened meanwhile.
+          setTimeout(() => menu.classList.contains("is-open") || (menu.hidden = true), 300);
+        }
+      };
+      toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+      menu.addEventListener("click", (e) => (e.target as Element).closest("a") && setOpen(false));
+      addEventListener("keydown", (e) => e.key === "Escape" && setOpen(false));
+
+      // Sections rise into place once, the first time they enter the viewport.
+      const reveal = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("is-in"), reveal.unobserve(e.target))),
+        { rootMargin: "0px 0px -10% 0px" },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => reveal.observe(el));
+
+      // The nav marks the section currently on screen.
+      const navLinks = document.querySelectorAll<HTMLAnchorElement>(".nav__links a[data-section]");
+      const spy = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            navLinks.forEach((a) => a.toggleAttribute("aria-current", a.dataset.section === e.target.id));
+          }),
+        { rootMargin: "-45% 0px -50% 0px" },
+      );
+      navLinks.forEach((a) => {
+        const target = document.getElementById(a.dataset.section!);
+        if (target) spy.observe(target);
+      });
+    </script>
+  </body>
+</html>
